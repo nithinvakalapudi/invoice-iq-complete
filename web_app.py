@@ -214,7 +214,10 @@ def config():
         "max_file_mb": settings.max_file_mb,
         "default_tolerance": ui.rounding_tolerance,
         "minimum_field_confidence": ui.review_threshold,
-        "ui_settings": {**asdict(ui), "mdm_folder": mdm_folder},
+        # Keep the form bound to the explicitly saved location. LocalStorage
+        # may use its built-in MDM fallback for processing without presenting
+        # that machine-specific fallback as a saved setting.
+        "ui_settings": asdict(ui),
         "batches": batches,
         "records": records,
         "reviewed_training_examples": len(s.training_examples()) if available else 0,
