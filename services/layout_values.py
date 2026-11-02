@@ -75,6 +75,9 @@ def scalar_layout_fields(words, width):
             continue
         row_words = row(anchor)
         text = ' '.join(word[4] for word in row_words)
+        # “Total VAT/Tax” is a tax subtotal, not the invoice gross total.
+        if re.search(r'\btotal\s+(?:vat|tax|rate)\b', text, re.I):
+            continue
         if re.search(r'amount\s+due|balance\s+due|grand\s+total|total\s+amount\s+due', text, re.I):
             amounts = money_values(' '.join(word[4] for word in row(anchor, True)))
             if len(amounts) == 1:

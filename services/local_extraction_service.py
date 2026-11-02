@@ -219,7 +219,7 @@ def _company_name(lines: list[str], kind: str) -> str | None:
 
 
 def _invoice_number(lines: list[str]) -> str | None:
-    candidates = _value_after_label(lines, r"\binvoice\s*(?:number|no\.?|#)\s*[:#;]?")
+    candidates = _value_after_label(lines, r"\b(?:tax\s+)?invoice\s*(?:number|no\.?|#|n\s*[º°]|№)\s*[:#;]?")
     candidates += _value_after_label(lines, r"\breference\s*:")
     for line in candidates + _ranked_lines(lines, "invoice_number"):
         value = re.sub(r"^(?:Invoice\s*(?:Number|No\.?|#)|Reference)\s*[:#;]?\s*",
@@ -443,59 +443,38 @@ def _vendor_email(lines: list[str], vendor_name: str | None) -> str | None:
 
 
 def _vendor_region(lines: list[str], vendor_name: str | None) -> str | None:
-    """Extract the account region from the invoice's Bill To address block."""
+    """Read region context from the supplier address, never customer addresses."""
     bill_to = next((i for i, line in enumerate(lines)
-                    if re.search(r'\bbill\s+to\b', line, re.I)), None)
-    if bill_to is None:
-        return None
-
-    def city(text: str) -> str:
-        text = re.sub(r'^\d{4,6}\s+', '', text.strip())
-        text = re.sub(r'\s+(?:\d{4,6}|[A-Z]{1,2}\d[A-Z\d]?\s+\d[A-Z]{2})$', '', text)
-        return text.strip()
-
-    address_lines = []
-    for line in lines[bill_to:bill_to + 12]:
-        if address_lines and re.search(r'\b(?:ship\s+to|invoice\s+(?:number|date)|product|description|quantity)\b', line, re.I):
-            break
-        address_lines.append(line)
-    # Country is often printed on its own line; combine it with the nearest
-    # preceding city/postcode line. Ignore the Bill To label/name and street.
-    for index in range(len(address_lines) - 1, 0, -1):
-        country = address_lines[index].strip(' ,')
-        if country.casefold() in {'united kingdom', 'uk', 'england', 'scotland', 'wales'}:
-            for previous in reversed(address_lines[1:index]):
-                parts = [part.strip() for part in previous.split(',') if part.strip()]
-                if len(parts) >= 2 and re.search(r'\b(?:E\d{1,2}|EC\d[A-Z]?|WC\d[A-Z]?|SW\d[A-Z]?|W\d[A-Z]?|N\d{1,2}|SE\d{1,2})\b', parts[-1], re.I):
-                    return f'{city(parts[-2])}, United Kingdom'
-                if len(parts) >= 2 and re.search(r'\b[A-Z]{1,2}\d[A-Z\d]?\s+\d[A-Z]{2}\b', parts[-1], re.I):
-                    return f'{city(parts[-2])}, United Kingdom'
-            return 'United Kingdom'
-    for line in reversed(address_lines):
-        if re.search(r'\b(?:invoice|due|date|reference)\b', line, re.I):
-            continue
+                    if re.search(r'\bbill\s+to\b', line, re.I)), min(len(lines), 18))
+    vendor_at = next((i for i, line in enumerate(lines[:bill_to])
+                      if vendor_name and vendor_name.casefold() in line.casefold()), None)
+    address = lines[vendor_at:bill_to] if vendor_at is not None else lines[:bill_to]
+    address = address[-12:]
+    countries = {
+        'united kingdom': 'United Kingdom', 'uk': 'United Kingdom', 'england': 'United Kingdom',
+        'scotland': 'United Kingdom', 'wales': 'United Kingdom', 'fr': 'France', 'france': 'France',
+        'de': 'Germany', 'germany': 'Germany', 'us': 'United States', 'usa': 'United States',
+        'united states': 'United States', 'ca': 'Canada', 'canada': 'Canada', 'sg': 'Singapore',
+        'singapore': 'Singapore', 'hk': 'Hong Kong', 'hong kong': 'Hong Kong',
+        'in': 'India', 'india': 'India', 'uae': 'UAE',
+    }
+    postcode = re.compile(r'^(?:[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}|[A-Z]{2}\s+\d{4,6}|\d{4,6})$', re.I)
+    for index in range(len(address) - 1, -1, -1):
+        line = address[index].strip(' ,')
         parts = [part.strip() for part in line.split(',') if part.strip()]
-        if len(parts) < 2:
+        country = countries.get((parts[-1] if parts else line).casefold())
+        if not country:
             continue
-        last = parts[-1]
-        if last.casefold() in {'hong kong', 'singapore', 'india', 'france', 'germany', 'uae'}:
-            return last.title() if last.casefold() != 'uae' else 'UAE'
-        state_postal = re.fullmatch(r'([A-Z]{2})\s+\d{4,6}', last)
-        if state_postal and len(parts) >= 2:
-            return f'{city(parts[-2])}, {state_postal.group(1)}'
-        if last.casefold() in {'usa', 'united states', 'canada', 'united kingdom', 'uk', 'england', 'scotland', 'wales'} and len(parts) >= 2:
-            if last.casefold() in {'united kingdom', 'uk', 'england', 'scotland', 'wales'}:
-                location = city(parts[-3]) if len(parts) >= 3 else city(parts[-2])
-                return f'{location}, United Kingdom' if location else 'United Kingdom'
-            area = re.match(r'([A-Z]{2})\b', parts[-2])
-            if area:
-                return f'{city(parts[-3])}, {area.group(1)}, {last}'
-        if last.casefold() in {'singapore'} or re.fullmatch(r'Singapore\s+\d{6}', last, re.I):
-            return 'Singapore'
-        if re.fullmatch(r'[A-Za-z][A-Za-z ]+', last) and len(last) > 3:
-            location = city(parts[-2])
-            if location and re.search(r'[A-Za-z]', location):
-                return f'{location}, {last}'
+        place_parts = parts[:-1] if len(parts) > 1 else []
+        if not place_parts and index:
+            place_parts = [part.strip() for part in address[index - 1].split(',') if part.strip()]
+        place_parts = [part for part in place_parts if not postcode.fullmatch(part)]
+        location = place_parts[-1] if place_parts else ''
+        location = re.sub(r'^\d{4,6}\s+', '', location.strip())
+        if location and not re.search(r'\d|\b(?:street|road|floor|suite|limited|ltd)\b', location, re.I):
+            if country in {'United Kingdom', 'France', 'Germany', 'United States', 'Canada'}:
+                return f'{location}, {country}'
+        return country
     return None
 
 
@@ -521,11 +500,12 @@ def extract_invoice(document_data: bytes, filename: str) -> dict[str, Any]:
     put("vendor_email", _vendor_email(lines, invoice.get('vendor_name')))
     put("bank_account_number", _account(lines))
     put("contract_id", _contract_id(lines) or _printed_billing_account(lines))
-    put("subtotal", _money_after_label(lines, r"^subtotal\b"))
+    put("subtotal", _money_after_label(lines, r"^subtotal\b")
+        or _money_after_label(lines, r"^net\s+amount\b"))
     put("tax_amount", _money_after_label(
-        lines, r"^(?:tax\s*/\s*vat|value\s+added\s+tax|tax\s+amount|sales\s+tax(?:\s+not\s+included)?|vat\s+amount|tax)\b"))
-    put("total_amount", _money_after_label(lines, r"^(?:total\s+amount\s+due|amount\s+due|balance\s+due|grand\s+total|total\s+due|invoice\s+amount)\b")
-        or _money_after_label(lines, r'^total\b')
+        lines, r"^(?:total\s+vat|total\s+tax|tax\s*/\s*vat|value\s+added\s+tax|tax\s+amount|sales\s+tax(?:\s+not\s+included)?|vat\s+amount|tax)\b"))
+    put("total_amount", _money_after_label(lines, r"^(?:amount\s+payable|total\s+amount\s+due|amount\s+due|balance\s+due|grand\s+total|total\s+due|invoice\s+amount|gross(?:\s+[A-Z]{3})?)\b")
+        or _money_after_label(lines, r'^total\b(?!\s*(?:vat|tax|rate)\b)')
         or _arithmetically_supported_total(lines))
     if ('subtotal' not in invoice and invoice.get('tax_amount') is not None
             and invoice.get('total_amount') is not None
