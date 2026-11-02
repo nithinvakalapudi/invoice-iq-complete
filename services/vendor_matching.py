@@ -170,15 +170,24 @@ def _region_key(value: str) -> str:
 
 
 def _region_rank(invoice_region: str, restriction: str) -> int:
-    """Exact regional matches beat broad Americas and unrestricted records."""
+    """Prefer exact/detailed regions; use groups only for broad restrictions."""
     if not restriction:
         return 1
     if not invoice_region:
         return 0
-    if invoice_region == restriction:
+    invoice_normalized = ' '.join(_words(invoice_region))
+    restriction_normalized = ' '.join(_words(restriction))
+    if invoice_normalized == restriction_normalized:
+        return 4
+    if (len(restriction_normalized) > 2 and restriction_normalized in invoice_normalized
+            or len(invoice_normalized) > 2 and invoice_normalized in restriction_normalized):
         return 3
-    if {invoice_region, restriction} <= {'americas', 'north america', 'latam'} and (
-        invoice_region == 'americas' or restriction == 'americas'
+    invoice_group = _region_key(invoice_region)
+    restriction_group = _region_key(restriction)
+    if restriction_normalized in REGION_GROUPS and invoice_group == restriction_group:
+        return 2
+    if {invoice_group, restriction_group} <= {'americas', 'north america', 'latam'} and (
+        invoice_group == 'americas' or restriction_group == 'americas'
     ):
         return 2
     return -1
@@ -425,18 +434,19 @@ def resolve_vendor_account(vendor: str | None, region: str | None,
         candidates = [(score, account) for score, account in ranked if score == best_score]
     else:
         candidates = [(score, account) for score, account in ranked if best_score - score < 3]
-    distinct_accounts = {account.account for _, account in candidates}
-    if len(distinct_accounts) == 1:
+    # A single matching master row is sufficient. Multiple rows must always be
+    # resolved through Bill To Region versus Restricted To, even when duplicate
+    # rows happen to carry the same account number.
+    if len(candidates) == 1:
         score, account = candidates[0]
         return VendorResolution(VendorMatch(account, score), 'MATCHED')
 
-    region_key = _region_key(region or '')
-    if not region_key:
+    if not _region_key(region or ''):
         return VendorResolution(None, 'LOW_CONFIDENCE',
-                                'Multiple MDM accounts match the vendor; no invoice or email Region is available')
+                                'Multiple VendorAcc records match the vendor; no Bill To Region is available')
     regional = [(rank, score, account) for score, account in candidates
                 if account.restricted_to
-                and (rank := _region_rank(region_key, _region_key(account.restricted_to))) > 0]
+                and (rank := _region_rank(region or '', account.restricted_to)) > 0]
     if not regional:
         restrictions = ', '.join(sorted({account.restricted_to or '(blank)'
                                          for _, account in candidates}))
