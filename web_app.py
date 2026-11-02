@@ -383,6 +383,7 @@ def outlook_run(payload: FolderRunSettings, request: Request):
     return {"folder": str(run.folder), "batch_id": run.batch_id,
             "emails_processed": run.emails_processed,
             "desktop_emails_processed": run.desktop_emails_processed,
+            "desktop_messages_scanned": run.desktop_messages_scanned,
             "local_emails_processed": run.local_emails_processed,
             "outlook_mailbox": run.outlook_mailbox,
             "emails_already_processed": run.emails_already_processed,

@@ -203,16 +203,18 @@ class VendorResolution:
     reason: str = ''
 
 
-_FILENAME_DATE = re.compile(r'(?<!\d)(?P<date>\d{8})(?!\d)')
+_VENDOR_EXPORT_DATE = re.compile(r'invoicemdm_(?P<date>\d{8})(?!\d)', re.IGNORECASE)
+_CONTRACT_EXPORT_DATE = re.compile(r'contract_(?P<date>\d{8})(?!\d)', re.IGNORECASE)
 
 
 def catalog_paths(folder: Path, today: date | None = None, *, allow_legacy: bool = True) -> tuple[Path, Path]:
     """Choose today's Vendor Accounts and Contracts exports.
 
-    Operational Vendor Accounts exports include a YYYYMMDD stamp, for example
+    Operational Vendor Accounts exports include a YYYYMMDD stamp immediately
+    after ``InvoiceMDM_``, for example
     ``47711_InvoiceMDM_20261007T10_59_26_20261007_105946Z.csv``. The rest of
-    the filename is not prescribed: a CSV/XLSX containing ``InvoiceMDM`` and a
-    date token is a dated Vendor Accounts candidate. Old exports are
+    the filename is not prescribed. Contracts use the equivalent
+    ``anything_contract_YYYYMMDD_anything.csv`` convention. Old exports are
     deliberately ignored. The legacy ``vendor_accounts.csv/.xlsx`` name
     remains supported when no dated exports are present. Contracts follow the
     same date rule when their filename contains ``contracts``; legacy
@@ -226,13 +228,12 @@ def catalog_paths(folder: Path, today: date | None = None, *, allow_legacy: bool
     dated_vendor_files = []
     current_vendor_files = []
     for item in files:
-        if 'invoicemdm' not in item.stem.casefold():
+        match = _VENDOR_EXPORT_DATE.search(item.stem)
+        if not match:
             continue
-        embedded_dates = {match.group('date') for match in _FILENAME_DATE.finditer(item.stem)}
-        if embedded_dates:
-            dated_vendor_files.append(item)
-            if today.strftime('%Y%m%d') in embedded_dates:
-                current_vendor_files.append(item)
+        dated_vendor_files.append(item)
+        if match.group('date') == today.strftime('%Y%m%d'):
+            current_vendor_files.append(item)
 
     static_vendor_files = [item for item in files
                            if item.stem.casefold() == 'vendor_accounts']
@@ -253,14 +254,12 @@ def catalog_paths(folder: Path, today: date | None = None, *, allow_legacy: bool
     dated_contract_files = []
     current_contract_files = []
     for item in files:
-        folded = item.stem.casefold()
-        if 'contracts' not in folded:
+        match = _CONTRACT_EXPORT_DATE.search(item.stem)
+        if not match:
             continue
-        embedded_dates = {match.group('date') for match in _FILENAME_DATE.finditer(item.stem)}
-        if embedded_dates:
-            dated_contract_files.append(item)
-            if today.strftime('%Y%m%d') in embedded_dates:
-                current_contract_files.append(item)
+        dated_contract_files.append(item)
+        if match.group('date') == today.strftime('%Y%m%d'):
+            current_contract_files.append(item)
 
     static_contract_files = [item for item in files if item.stem.casefold() == 'contracts']
     if dated_contract_files:

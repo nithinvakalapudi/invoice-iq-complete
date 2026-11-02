@@ -37,6 +37,7 @@ class DesktopRead:
     ignored: int
     warnings: list[str]
     mailbox: str
+    scanned_messages: int = 0
 
 
 def _mapi_namespace():
@@ -101,23 +102,30 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
         warnings: list[str] = []
         skipped = ignored = 0
         items = folder.Items
-        for item_index in range(1, items.Count + 1):
+        # Snapshot the actual COM objects before doing attachment work. Avoid
+        # iterating the live collection or resolving each EntryID again: Outlook
+        # may reorder Items during sync, and GetItemFromID can fail for items
+        # surfaced through delegated or secondary stores.
+        item_count = int(items.Count)
+        item_snapshot = []
+        for item_index in range(1, item_count + 1):
+            try:
+                candidate = items.Item(item_index)
+                if int(candidate.Class) == _MAIL_CLASS and candidate.EntryID:
+                    item_snapshot.append(candidate)
+            except Exception as exc:
+                warnings.append(f'Outlook item {item_index}: could not enumerate message: {exc}.')
+        for item_index, message in enumerate(item_snapshot, 1):
             if len(emails) >= max_new_emails:
                 warnings.append(f'Run limited to {max_new_emails} new Outlook emails; select Run again for the rest.')
                 break
             try:
-                message = items.Item(item_index)
-                if int(message.Class) != _MAIL_CLASS:
-                    ignored += 1
-                    continue
-                entry_id = str(message.EntryID or '')
-                if not entry_id:
-                    ignored += 1
-                    continue
+                entry_id = str(message.EntryID)
                 label = _source_label(message.Subject, entry_id)
                 message_key = 'outlook:' + hashlib.sha256((store_id + entry_id).encode()).hexdigest()
                 if message_processed and message_processed(message_key):
                     skipped += 1
+                    warnings.append(f'{label}: this Outlook email was already processed; skipped.')
                     continue
                 attachment_count = int(message.Attachments.Count)
                 if attachment_count > 200:
@@ -153,6 +161,7 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
                             email_region=region, email_region_issue=region_issue))
                 if not documents:
                     ignored += 1
+                    warnings.append(f'{label}: no supported invoice attachments found; supported types are PDF, common image files, CSV, XLSX, EML and MSG.')
                     continue
                 digest = hashlib.sha256()
                 for document in documents:
@@ -162,11 +171,12 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
                 identity = (message_key, digest.hexdigest())
                 if already_processed(*identity):
                     skipped += 1
+                    warnings.append(f'{label}: attachment contents were already processed; skipped as duplicate intake.')
                     continue
                 emails.append(DesktopEmail(identity, store_id, entry_id, label, attachments, documents))
             except Exception as exc:
                 warnings.append(f'Outlook item {item_index}: {exc}. It was not processed.')
-        return DesktopRead(emails, skipped, ignored, warnings, mailbox_name)
+        return DesktopRead(emails, skipped, ignored, warnings, mailbox_name, len(item_snapshot))
     finally:
         pythoncom.CoUninitialize()
 

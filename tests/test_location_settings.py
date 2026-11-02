@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 from openpyxl import Workbook, load_workbook
 
 import web_app
-from config.ui_settings import load_ui_settings, settings_file
+from config.ui_settings import UiSettings, load_ui_settings, settings_file
 from models.invoice_schema import Invoice, InvoiceResult
 from services.storage_lock import folder_operation_lock
 from services.vendor_matching import catalog_paths, load_vendor_accounts
@@ -40,7 +40,7 @@ def catalog(folder, extension='csv'):
     contract = [['Contract ID', 'Start Date', 'End Date'], ['000123', '2026-01-01', '2026-12-31']]
     for name, rows in [('vendor_accounts', vendor), ('contracts', contract)]:
         stamp = datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%Y%m%d')
-        filename = 'InvoiceMDM' if name == 'vendor_accounts' else 'contracts'
+        filename = 'InvoiceMDM' if name == 'vendor_accounts' else 'contract'
         path = folder / f'{filename}_{stamp}.{extension}'
         if extension == 'csv':
             with path.open('w', newline='', encoding='utf-8') as stream:
@@ -96,6 +96,8 @@ def test_save_reload_process_download_and_reset_preserve_history_and_masters(env
     assert response.json()['warnings'] == []
     saved = load_ui_settings(web_app.settings)
     assert saved.review_threshold == 90 and saved.revision
+    assert saved.output_folder == str(Path(payload['output_folder']).resolve())
+    assert saved.mdm_folder == str(Path(payload['mdm_folder']).resolve())
     assert web_app.storage().generation == generation
     assert web_app.storage().database == root / 'invoice_history.sqlite3'
     assert artifact.read_bytes() == b'owned-model'
@@ -151,6 +153,28 @@ def test_invalid_settings_do_not_replace_good_settings(environment, change):
     assert settings_file(root).read_bytes() == before
 
 
+def test_changed_output_and_mdm_paths_persist_after_config_reload(environment, tmp_path):
+    root, client, payload = environment
+    first = client.post('/api/settings', json=payload)
+    assert first.status_code == 200, first.text
+    saved = first.json()['ui_settings']
+
+    new_output = tmp_path / 'new-output'
+    new_mdm = tmp_path / 'new-masters'
+    catalog(new_mdm)
+    changed = {**saved, 'output_folder': str(new_output), 'mdm_folder': str(new_mdm)}
+
+    response = client.post('/api/settings', json=changed)
+    assert response.status_code == 200, response.text
+    returned = response.json()['ui_settings']
+    assert Path(returned['output_folder']) == new_output.resolve()
+    assert Path(returned['mdm_folder']) == new_mdm.resolve()
+    assert load_ui_settings(web_app.settings) == UiSettings(**returned)
+    config = client.get('/api/config').json()['ui_settings']
+    assert config['output_folder'] == str(new_output.resolve())
+    assert config['mdm_folder'] == str(new_mdm.resolve())
+
+
 def test_conflicts_stale_revision_cross_origin_and_active_operation(environment):
     root, client, payload = environment
     assert client.post('/api/settings', json=payload, headers={'Origin': 'https://elsewhere.test'}).status_code == 403
@@ -189,7 +213,7 @@ def test_folder_run_pdf_msg_csv_and_unchanged_skipping(environment):
 def test_folder_missing_master_no_fallback_and_bad_workbook(environment):
     root, client, payload = environment
     assert client.post('/api/input-folder/run').status_code == 422
-    missing = next(Path(payload['mdm_folder']).glob('contracts_*.csv'))
+    missing = next(Path(payload['mdm_folder']).glob('contract_*.csv'))
     original = missing.read_bytes()
     missing.unlink()
     response = client.post('/api/settings', json=payload)
@@ -231,12 +255,20 @@ def test_dated_vendor_export_uses_only_todays_file(tmp_path):
 
 
 def test_dated_vendor_export_does_not_require_a_fixed_prefix(tmp_path):
-    current = tmp_path / 'arbitrary_prefix_InvoiceMDM_final_20261031_120000.csv'
+    current = tmp_path / 'arbitrary_prefix_InvoiceMDM_20261031_final_120000.csv'
     contracts = tmp_path / 'contracts.xlsx'
     current.write_text('current', encoding='utf-8')
     contracts.write_bytes(b'contracts')
 
     assert catalog_paths(tmp_path, date(2026, 10, 31)) == (current, contracts)
+
+
+def test_vendor_date_must_immediately_follow_invoicemdm_keyword(tmp_path):
+    malformed = tmp_path / 'arbitrary_prefix_InvoiceMDM_final_20261031.csv'
+    malformed.write_text('wrong', encoding='utf-8')
+
+    with pytest.raises(ValueError, match='dated today'):
+        catalog_paths(tmp_path, date(2026, 10, 31), allow_legacy=False)
 
 
 def test_unrelated_dated_file_is_not_a_vendor_master(tmp_path):
@@ -250,13 +282,23 @@ def test_unrelated_dated_file_is_not_a_vendor_master(tmp_path):
 
 def test_dated_contract_export_uses_only_todays_file(tmp_path):
     vendor = tmp_path / 'InvoiceMDM_20261031.csv'
-    old = tmp_path / 'any_contracts_20261030_export.csv'
-    current = tmp_path / 'any_contracts_anything_20261031_anything.xlsx'
+    old = tmp_path / 'any_contract_20261030_export.csv'
+    current = tmp_path / 'any_contract_20261031_anything.xlsx'
     vendor.write_text('vendor', encoding='utf-8')
     old.write_text('old', encoding='utf-8')
     current.write_bytes(b'current')
 
     assert catalog_paths(tmp_path, date(2026, 10, 31)) == (vendor, current)
+
+
+def test_contract_date_must_immediately_follow_contract_keyword(tmp_path):
+    vendor = tmp_path / 'InvoiceMDM_20261031.csv'
+    malformed = tmp_path / 'any_contract_final_20261031.csv'
+    vendor.write_text('vendor', encoding='utf-8')
+    malformed.write_text('wrong', encoding='utf-8')
+
+    with pytest.raises(ValueError, match='Contracts export dated today'):
+        catalog_paths(tmp_path, date(2026, 10, 31), allow_legacy=False)
 
 
 def test_misspelled_contract_keyword_is_not_selected(tmp_path):
@@ -273,12 +315,12 @@ def test_misspelled_contract_keyword_is_not_selected(tmp_path):
 def test_dated_contract_export_requires_today_and_rejects_duplicates(tmp_path):
     vendor = tmp_path / 'InvoiceMDM_20261031.csv'
     vendor.write_text('vendor', encoding='utf-8')
-    (tmp_path / 'contracts_20261030.csv').write_text('old', encoding='utf-8')
+    (tmp_path / 'contract_20261030.csv').write_text('old', encoding='utf-8')
     with pytest.raises(ValueError, match='no Contracts export dated today'):
         catalog_paths(tmp_path, date(2026, 10, 31))
 
     for suffix in ('csv', 'xlsx'):
-        (tmp_path / f'contracts_20261031.{suffix}').write_bytes(b'current')
+        (tmp_path / f'contract_20261031.{suffix}').write_bytes(b'current')
     with pytest.raises(ValueError, match='multiple current Contracts'):
         catalog_paths(tmp_path, date(2026, 10, 31))
 

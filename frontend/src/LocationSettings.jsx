@@ -18,7 +18,10 @@ export default function LocationSettings({ saved, threshold, tolerance, setThres
     const issue = settingsError(payload)
     if (issue) { onError(issue); return }
     setSaving(true)
-    try { await onSave(payload) }
+    try {
+      const persisted = await onSave(payload)
+      if (persisted) setDraft(persisted)
+    }
     catch (error) { onError(error.message) }
     finally { setSaving(false) }
   }

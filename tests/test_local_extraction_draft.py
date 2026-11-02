@@ -283,7 +283,7 @@ I50,800.00
     assert payload['line_items'][1]['line_total'] == '50800.00'
 
 
-def test_region_uses_vendor_location_not_bill_to_location(monkeypatch):
+def test_region_uses_bill_to_location_for_account_matching(monkeypatch):
     text = """Blue Ocean Technologies, LLC
 515 N Flagler Dr, Suite 350, West Palm Beach, FL 33401
 Invoice #: BOT-2026-1001
@@ -292,17 +292,33 @@ Bill To: SG Securities (HK) Limited
 """
     monkeypatch.setattr(local, 'extract_document_text', lambda *_: text)
     result = process_document(DocumentInput('invoice.pdf', b'PDF'), .02, 95)
-    assert result.invoice.region == 'West Palm Beach, FL'
-    assert result.invoice.region != 'Hong Kong'
-    assert mdm_row(result)['Region'] == 'West Palm Beach, FL'
+    assert result.invoice.region == 'Hong Kong'
+    assert result.invoice.region != 'West Palm Beach, FL'
+    assert mdm_row(result)['Region'] == 'Hong Kong'
 
 
-def test_region_stays_blank_without_a_printed_vendor_address(monkeypatch):
+def test_region_stays_blank_without_a_printed_bill_to_address(monkeypatch):
     monkeypatch.setattr(local, 'extract_document_text', lambda *_: (
         'Vendor: Blue Ocean Technologies, LLC\nBill To: SG Securities (HK) Limited\n'
         '1 Queen\'s Road East, Hong Kong'))
     payload = local.extract_invoice(b'PDF', 'invoice.pdf')
     assert payload['invoice'].get('region') is None
+
+
+def test_bill_to_region_extracts_uk_city_postcode_country(monkeypatch):
+    text = """Vendor: Example Supplier Ltd
+Bill To: Societe Generale London
+BLR-MKD-INVOICING
+1 Bank St,
+Canary Wharf
+London, E14
+United Kingdom
+Description
+Service fee
+"""
+    monkeypatch.setattr(local, 'extract_document_text', lambda *_: text)
+    payload = local.extract_invoice(b'PDF', 'invoice.pdf')
+    assert payload['invoice']['region'] == 'London, United Kingdom'
 
 
 def test_screen_photo_noise_does_not_become_vendor_or_total(monkeypatch):

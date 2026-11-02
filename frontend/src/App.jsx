@@ -163,14 +163,16 @@ function Results({ batch, columns, requiredFields, tolerance, threshold, onSaved
       <Table.Header><Table.Row>{names.map((name) => <Table.Head key={name} scope="col">{!full ? ({ 'Vendor -As per MDM': 'Vendor', 'Billing Start Date': 'Service start date', 'Billing End Date': 'Service end date' }[name] || name) : name}</Table.Head>)}<Table.Head scope="col">Details</Table.Head></Table.Row></Table.Header>
       <Table.Body>{shown.map(({ result, index }) => <Table.Row key={`${result.source_file}-${index}`}>
         {names.map((name) => {
-          const value = result.mdm_row?.[name]
+          const value = name === 'Invoice Amount'
+            ? result.invoice?.total_amount
+            : result.mdm_row?.[name]
           if (name === 'Review status') {
             const awaitingMdm = result.mdm_checked !== true && value === 'SUCCESS'
             return <Table.Cell key={name}><Badge tone={awaitingMdm ? 'warning' : statusTone(value)}>{awaitingMdm ? 'Run MDM' : statusLabel(value)}</Badge></Table.Cell>
           }
           if (name === 'Duplicate status' && !full) return <Table.Cell key={name}><Badge tone={value === 'POSSIBLE_DUPLICATE' ? 'warning' : 'neutral'}>{duplicateLabel(value)}</Badge></Table.Cell>
           if (name === 'Invoice Number') return <Table.Head key={name} scope="row"><Text as="span" variant="body-sm" weight="semibold">{display(value)}</Text></Table.Head>
-          return <Table.Cell key={name}><span className={['Net Amount', 'Tax Amount', 'Billing Account'].includes(name) ? 'numeric-value' : undefined}>{['Net Amount', 'Tax Amount'].includes(name) ? displayAmount(value) : display(value)}</span></Table.Cell>
+          return <Table.Cell key={name}><span className={['Net Amount', 'Tax Amount', 'Invoice Amount', 'Billing Account'].includes(name) ? 'numeric-value' : undefined}>{['Net Amount', 'Tax Amount', 'Invoice Amount'].includes(name) ? displayAmount(value) : display(value)}</span></Table.Cell>
         })}
         <Table.Cell><ReviewDialog batch={batch} index={index} tolerance={tolerance} threshold={threshold} onSaved={onSaved} onError={onError} /></Table.Cell>
       </Table.Row>)}</Table.Body>
@@ -374,8 +376,17 @@ export default function App() {
     setHistory(null); setRunWarnings(data.warnings || [])
     setThreshold(data.ui_settings.review_threshold); setTolerance(data.ui_settings.rounding_tolerance)
     setMessage(data.message)
-    await refreshConfig()
+    // Apply the exact settings returned by the successful save before doing
+    // secondary refreshes, so a stale config response cannot restore old paths.
+    setConfig((previous) => previous ? {
+      ...previous,
+      ui_settings: data.ui_settings,
+      minimum_field_confidence: data.ui_settings.review_threshold,
+      default_tolerance: data.ui_settings.rounding_tolerance,
+      cumulative_invoice_report_file: `${data.ui_settings.output_folder}/MDM/Invoice_data.csv`,
+    } : previous)
     if (batch?.batch_id) await refreshCurrentBatch()
+    return data.ui_settings
   }
   const runInputFolder = async () => {
     setBusyTask('input-folder'); setBusy(true); setError(''); setMessage(''); setRunWarnings([])
@@ -399,7 +410,7 @@ export default function App() {
       setRunWarnings(data.warnings || [])
       setHistory(null)
       setMessage(data.batch_id
-        ? `Saved ${data.counts.total} results from ${data.desktop_emails_processed} classic Outlook emails; ${data.counts.failed} failed, ${data.counts.rejected || 0} rejected, ${data.counts.review} need review. ${data.emails_already_processed} emails already processed.`
+        ? `Scanned ${data.desktop_messages_scanned} emails in the Outlook folder; processed ${data.desktop_emails_processed}, skipped ${data.emails_already_processed} already processed, ignored ${data.ignored_files}. Saved ${data.counts.total} attachment results; ${data.counts.failed} failed, ${data.counts.rejected || 0} rejected, ${data.counts.review} need review.`
         : data.emails_already_processed === 0 && data.ignored_files === 0 && !(data.warnings || []).length
           ? 'No supported invoice attachments were found in classic Outlook.'
           : `No new emails processed. ${data.emails_already_processed} already processed; ${data.ignored_files} messages had no supported attachments.`)

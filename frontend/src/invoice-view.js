@@ -2,7 +2,7 @@
 export const overviewColumns = [
   'Vendor -As per MDM', 'Invoice Number', 'Invoice Date', 'Region',
   'Billing Start Date', 'Billing End Date', 'Billing Account',
-  'Currency', 'Net Amount', 'Tax Amount', 'Duplicate status', 'Review status',
+  'Currency', 'Net Amount', 'Tax Amount', 'Invoice Amount', 'Duplicate status', 'Review status',
 ]
 
 export const display = (value) => value === null || value === undefined || value === '' ? '—' : String(value)

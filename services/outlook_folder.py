@@ -31,6 +31,7 @@ class FolderRun:
     desktop_emails_processed: int = 0
     local_emails_processed: int = 0
     outlook_mailbox: str = ''
+    desktop_messages_scanned: int = 0
 
 
 @exclusive_folder_operation
@@ -79,6 +80,7 @@ def run_outlook_folder(storage: LocalStorage, tolerance: float, threshold: float
                 local_count += 1
         desktop_emails: list[DesktopEmail] = []
         outlook_mailbox = ''
+        desktop_messages_scanned = 0
         if source in {'desktop', 'both'}:
             try:
                 desktop = read_invoice_emails(mailbox, folder_name, max_file_bytes,
@@ -86,6 +88,7 @@ def run_outlook_folder(storage: LocalStorage, tolerance: float, threshold: float
                                               storage.outlook_message_processed)
                 desktop_emails = desktop.emails
                 outlook_mailbox = desktop.mailbox
+                desktop_messages_scanned = desktop.scanned_messages
                 skipped += desktop.already_processed
                 ignored += desktop.ignored
                 intake_warnings.extend(desktop.warnings)
@@ -95,7 +98,8 @@ def run_outlook_folder(storage: LocalStorage, tolerance: float, threshold: float
                 intake_warnings.append(f'Classic Outlook unavailable: {exc} Local email files were still checked.')
         if not uploads and not desktop_emails:
             return FolderRun(folder, None, 0, skipped, ignored, [],
-                             intake_warnings + storage.export_warnings(), 0, 0, outlook_mailbox)
+                             intake_warnings + storage.export_warnings(), 0, 0, outlook_mailbox,
+                             desktop_messages_scanned)
 
         batch_id = uuid4().hex
         documents = []
@@ -124,6 +128,7 @@ def run_outlook_folder(storage: LocalStorage, tolerance: float, threshold: float
         warnings = intake_warnings + storage.save_batch(batch_id, results, outlook_files=identities)
         warnings.extend(mark_emails_read(complete_emails))
         return FolderRun(folder, batch_id, local_count + len(desktop_emails), skipped, ignored,
-                         results, warnings, len(desktop_emails), local_count, outlook_mailbox)
+                         results, warnings, len(desktop_emails), local_count, outlook_mailbox,
+                         desktop_messages_scanned)
     finally:
         _RUN_LOCK.release()

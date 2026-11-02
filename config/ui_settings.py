@@ -78,7 +78,7 @@ def validate_ui_settings(value: UiSettings) -> UiSettings:
     if mdm_folder:
         vendor_path, contract_path = catalog_paths(Path(mdm_folder), allow_legacy=False)
         if not vendor_path.is_file() or not contract_path.is_file():
-            raise ValueError('MDM folder must contain current InvoiceMDM and Contracts CSV/XLSX files whose names contain today\'s YYYYMMDD (legacy vendor_accounts/contracts names are also supported).')
+            raise ValueError('MDM folder must contain current InvoiceMDM_YYYYMMDD and contract_YYYYMMDD CSV/XLSX files (legacy vendor_accounts.csv and contracts.csv are supported only when no dated exports exist).')
         if not load_vendor_accounts(vendor_path, contract_path):
             raise ValueError('Vendor Accounts master has no usable accounts.')
         # Require a correctly shaped contracts table, without rejecting individual
@@ -92,8 +92,14 @@ def validate_ui_settings(value: UiSettings) -> UiSettings:
 def save_ui_settings(base, value: UiSettings) -> UiSettings:
     value = validate_ui_settings(value)
     value = replace(value, revision=uuid4().hex)
-    _atomic_write(settings_file(base.local_storage_dir),
-                  json.dumps(asdict(value), ensure_ascii=False, indent=2).encode('utf-8'))
+    path = settings_file(base.local_storage_dir)
+    encoded = json.dumps(asdict(value), ensure_ascii=False, indent=2).encode('utf-8')
+    _atomic_write(path, encoded)
+    # Fail the request if persistence did not actually stick; the UI must not
+    # report a successful save for a path that would revert on refresh.
+    saved = json.loads(path.read_text(encoding='utf-8'))
+    if saved != asdict(value):
+        raise OSError(f'Settings verification failed for {path}.')
     return value
 
 
