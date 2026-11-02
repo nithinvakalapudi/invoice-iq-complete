@@ -11,7 +11,7 @@ from pathlib import Path
 from threading import Lock
 from typing import Literal
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
@@ -240,7 +240,7 @@ class SettingsUpdate(BaseModel):
 
 
 @app.post('/api/settings')
-def update_settings(payload: SettingsUpdate, request: Request):
+def update_settings(payload: SettingsUpdate, request: Request, background_tasks: BackgroundTasks):
     _same_origin(request)
     try:
         with folder_operation_lock(Path(settings.local_storage_dir)):
@@ -255,11 +255,13 @@ def update_settings(payload: SettingsUpdate, request: Request):
             with TemporaryFile(dir=destination):
                 pass
             new = save_ui_settings(settings, new)
-            warnings = configured_storage(settings, new).refresh_exports()
+            # Rebuilding cumulative reports may take a while on a large history.
+            # Persist locations first and let the client finish saving promptly.
+            background_tasks.add_task(configured_storage(settings, new).refresh_exports)
     except (OSError, ValueError, RuntimeError, csv.Error) as exc:
         raise HTTPException(422, str(exc)) from exc
-    return {'ui_settings': asdict(new), 'warnings': warnings,
-            'message': 'Settings saved. Reports use the selected output folder; history and trained models were kept.'}
+    return {'ui_settings': asdict(new), 'warnings': [],
+            'message': 'Settings saved. Existing reports are refreshing in the background; history and trained models were kept.'}
 
 
 @app.get("/api/history")
