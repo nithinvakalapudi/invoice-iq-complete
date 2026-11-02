@@ -32,7 +32,7 @@ def model_diagnostics() -> dict:
     from services.ocr_service import is_tesseract_available
     return {'ready': True, 'models_enabled': False, 'backend': 'ocr_rules',
             'ocr_available': is_tesseract_available(), 'issues': {},
-            'date_order': settings.invoice_date_order, 'region_source': 'supplier_address'}
+            'date_order': settings.invoice_date_order, 'region_source': 'bill_to_address'}
 
 
 def _reviewed_model():
@@ -443,7 +443,7 @@ def _vendor_email(lines: list[str], vendor_name: str | None) -> str | None:
 
 
 def _region_from_address(address_lines: list[str]) -> str | None:
-    """Convert printed supplier-address evidence into an MDM region value."""
+    """Convert Bill To address evidence into the country used by MDM."""
     if not address_lines:
         return None
 
@@ -476,22 +476,12 @@ def _region_from_address(address_lines: list[str]) -> str | None:
         country = countries.get(country_token)
         if not country:
             continue
-        place_parts = parts[:-1] if len(parts) > 1 else []
-        if not place_parts and index:
-            place_parts = [part.strip() for part in address_lines[index - 1].split(',') if part.strip()]
-        place_parts = [part for part in place_parts if not postcode.fullmatch(part)]
-        location = next((city(part) for part in reversed(place_parts)
-                         if city(part) and not re.search(
-                             r'\d|\b(?:street|road|floor|suite|limited|ltd)\b', city(part), re.I)), '')
-        if location and not re.search(r'\d|\b(?:street|road|floor|suite|limited|ltd)\b', location, re.I):
-            if country in {'United Kingdom', 'France', 'Germany', 'United States', 'Canada'}:
-                return f'{location}, {country}'
         return country
 
     for line in reversed(address_lines):
         match = re.search(r'(?P<city>[A-Za-z][A-Za-z .\'-]+),?\s+[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b', line, re.I)
         if match:
-            return f"{match.group('city').strip(' ,')}, United Kingdom"
+            return 'United Kingdom'
     return None
 
 
