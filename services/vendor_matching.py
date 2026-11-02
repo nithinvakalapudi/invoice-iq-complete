@@ -427,6 +427,8 @@ def resolve_vendor_account(vendor: str | None, region: str | None,
     """
     if not vendor:
         return VendorResolution(None, 'NOT_FOUND', 'Invoice vendor is blank')
+    if not accounts:
+        return VendorResolution(None, 'NOT_FOUND', 'MDM vendor master is empty or unavailable')
     if _is_market_news_vendor(vendor):
         existing = next((account for account in accounts
                          if _words(account.account)[:1] == ('1080911',)), None)
@@ -442,8 +444,6 @@ def resolve_vendor_account(vendor: str | None, region: str | None,
         )
         return VendorResolution(VendorMatch(approved, 100.0), 'MATCHED',
                                 'Approved Market News billing-account rule')
-    if not accounts:
-        return VendorResolution(None, 'NOT_FOUND', 'MDM vendor master is empty or unavailable')
     ranked = [(max(vendor_similarity(vendor, name)
                    for name in (account.vendor, *account.aliases)), account)
               for account in accounts]

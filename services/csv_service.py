@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 import zipfile
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
@@ -29,7 +30,17 @@ def _field(invoice: Any, name: str) -> Any:
 
 
 def invoice_date_display(result: InvoiceResult, name: str) -> str:
-    return result.printed_dates.get(name) or _display_date(getattr(result.invoice, name, None))
+    printed = result.printed_dates.get(name)
+    if printed:
+        normalized = normalize_date(printed)
+        if normalized and re.search(r'[A-Za-z]', printed):
+            parsed = datetime.strptime(normalized, "%Y-%m-%d")
+            # Preserve the printed order while replacing the month word with
+            # its two-digit number.
+            return parsed.strftime("%m/%d/%Y" if re.match(r'\s*[A-Za-z]', printed)
+                                   else "%d/%m/%Y")
+        return printed
+    return _display_date(getattr(result.invoice, name, None))
 
 
 def invoice_age(result: InvoiceResult):
