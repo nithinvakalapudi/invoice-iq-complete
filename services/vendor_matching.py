@@ -26,6 +26,8 @@ LEGAL_SUFFIXES = {
     'llc', 'ltd', 'limited', 'inc', 'incorporated', 'corp', 'corporation',
     'co', 'company', 'plc', 'pvt', 'private', 'gmbh', 'ag', 'sa',
 }
+MARKET_NEWS_BILLING_ACCOUNT = '1080911 - Developed Markets'
+MARKET_NEWS_QUALIFIERS = {'international', *LEGAL_SUFFIXES}
 GENERIC_WORDS = {'the', 'and', 'of', 'for', 'services', 'service', 'group'}
 REGION_GROUPS = {
     'apac': 'apac', 'asia pacific': 'apac', 'asia': 'apac',
@@ -60,6 +62,13 @@ def _business_words(value: str) -> tuple[str, ...]:
     while len(words) > 1 and words[-1] in LEGAL_SUFFIXES:
         words.pop()
     return tuple(words)
+
+
+def _is_market_news_vendor(value: str) -> bool:
+    """Recognize the approved Market News name and its master-data variants."""
+    words = _words(value)
+    return (words[:2] == ('market', 'news')
+            and all(word in MARKET_NEWS_QUALIFIERS for word in words[2:]))
 
 
 def _longest_contiguous(left: tuple[str, ...], right: tuple[str, ...]) -> int:
@@ -418,6 +427,21 @@ def resolve_vendor_account(vendor: str | None, region: str | None,
     """
     if not vendor:
         return VendorResolution(None, 'NOT_FOUND', 'Invoice vendor is blank')
+    if _is_market_news_vendor(vendor):
+        existing = next((account for account in accounts
+                         if _words(account.account)[:1] == ('1080911',)), None)
+        approved = VendorAccount(
+            MARKET_NEWS_BILLING_ACCOUNT,
+            existing.vendor if existing else 'Market News',
+            existing.restricted_to if existing else (region or ''),
+            existing.aliases if existing else (),
+            existing.contract_status if existing else 'NOT_CHECKED',
+            existing.contract_reason if existing else '',
+            existing.contract_start_date if existing else '',
+            existing.contract_end_date if existing else '',
+        )
+        return VendorResolution(VendorMatch(approved, 100.0), 'MATCHED',
+                                'Approved Market News billing-account rule')
     if not accounts:
         return VendorResolution(None, 'NOT_FOUND', 'MDM vendor master is empty or unavailable')
     ranked = [(max(vendor_similarity(vendor, name)
