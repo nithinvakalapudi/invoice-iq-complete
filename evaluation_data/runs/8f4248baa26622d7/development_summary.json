@@ -1,0 +1,85 @@
+{
+  "run_id": "8f4248baa26622d7",
+  "model": "gemini-2.5-flash",
+  "split": "development",
+  "utc": "2026-10-05T02:45:34.217365+00:00",
+  "target_for_split": 100,
+  "attempted": 1,
+  "successful_extractions": 1,
+  "stop_reason": null,
+  "fields": {
+    "invoice_number": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "invoice_date": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "vendor_name": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "vendor_address": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "customer_name": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "customer_address": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "bank_account_number": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "total_amount": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "tax_amount": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "line_count": {
+      "correct": 1,
+      "evaluated": 1,
+      "accuracy_percent": 100.0
+    },
+    "line_description": {
+      "correct": 6,
+      "evaluated": 6,
+      "accuracy_percent": 100.0
+    },
+    "line_quantity": {
+      "correct": 6,
+      "evaluated": 6,
+      "accuracy_percent": 100.0
+    },
+    "line_line_total": {
+      "correct": 6,
+      "evaluated": 6,
+      "accuracy_percent": 100.0
+    }
+  },
+  "complete": false,
+  "limitations": [
+    "Synthetic English invoices; mostly one layout family.",
+    "Blank/missing annotations are unscored, not assumed absent.",
+    "Publisher labels have not all been manually verified.",
+    "API failures count as extraction misses; confidence is not accuracy.",
+    "No model weight training; development split is for pipeline tuning only."
+  ]
+}

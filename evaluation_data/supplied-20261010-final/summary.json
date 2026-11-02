@@ -1,0 +1,138 @@
+{
+  "timestamp_utc": "2026-10-10T16:13:47.342474+00:00",
+  "archive_hashes": {
+    "invoices_10_unique.zip": "bfb7f228db64bc71b72bc787d1eea982cea31de661a92ea67dd9b38fedc363b8",
+    "invoices_training_corrected.zip": "639bd265da29c0e501bf1f93f9dc585f590aebac611cf6a35490da7cad8dd90e",
+    "invoice_training_50.zip": "da3ce14451a54aaa610d8c23464319a8a8b6b81bb843b29c2db2a960b012eadb",
+    "invoice_training_50 (1).zip": "30dbe64ffe829a752396f1c57d533d3ad1627d04dc90159e718ed5264131c94b",
+    "invoice_2000_training_dataset.zip": "5d189c78e4ead9b7e36a7d7ec9a6dd61740618b6f20be7783e99284888ad6224",
+    "two_outlook_invoice_emails.zip": "b54f9d482b236823c08da00bcaa7be0b6a007a20ddf67f74412bb4f6401cba49",
+    "outlook_invoice_mails_like_reference.zip": "ec6188c0d3abcb36a16a8c01013637afd206f443ede250ad15a7fda1521844b7"
+  },
+  "run_mode": "REPORT_REPLAY",
+  "prediction_checkpoint": "evaluation_data\\supplied-20261010-123312-verified\\Predictions.json",
+  "archive_entries": 2176,
+  "unique_inputs": 2102,
+  "status_counts": {
+    "REVIEW_REQUIRED": 22,
+    "REJECTED": 2152,
+    "FAILED": 2
+  },
+  "unique_status_counts": {
+    "REVIEW_REQUIRED": 22,
+    "REJECTED": 2078,
+    "FAILED": 2
+  },
+  "core_field_accuracy_percent": 99.99,
+  "all_field_accuracy_percent": 82.52,
+  "all_field_comparisons": 66632,
+  "processing_status_counts": {
+    "LOCAL_DRAFT": 2174,
+    "FAILED": 2
+  },
+  "core_field_comparisons": 14788,
+  "field_scores": {
+    "vendor_name": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "vendor_address": {
+      "tested": 2110,
+      "correct": 0
+    },
+    "customer_name": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "customer_address": {
+      "tested": 2110,
+      "correct": 0
+    },
+    "invoice_number": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "invoice_date": {
+      "tested": 2110,
+      "correct": 2108
+    },
+    "currency": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "bank_account_number": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "subtotal": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "tax_amount": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "total_amount": {
+      "tested": 2110,
+      "correct": 2110
+    },
+    "customer_email": {
+      "tested": 110,
+      "correct": 110
+    },
+    "service_start_date": {
+      "tested": 9,
+      "correct": 9
+    },
+    "service_end_date": {
+      "tested": 9,
+      "correct": 9
+    },
+    "line_count": {
+      "tested": 2110,
+      "correct": 2010
+    },
+    "line_description": {
+      "tested": 8271,
+      "correct": 7939
+    },
+    "line_quantity": {
+      "tested": 8271,
+      "correct": 7939
+    },
+    "line_unit_price": {
+      "tested": 8271,
+      "correct": 7939
+    },
+    "line_line_total": {
+      "tested": 8271,
+      "correct": 7939
+    },
+    "due_date": {
+      "tested": 2100,
+      "correct": 2100
+    },
+    "discount": {
+      "tested": 2000,
+      "correct": 0
+    },
+    "shipping_amount": {
+      "tested": 2000,
+      "correct": 0
+    },
+    "payment_terms": {
+      "tested": 2000,
+      "correct": 0
+    }
+  },
+  "verified_export_rows": 0,
+  "checks": [
+    "No missing-service-date invoice was marked Success",
+    "All assigned vendor names and accounts come from the same master record",
+    "Live invoice history, training examples, model artifacts, and masters unchanged",
+    "All records retained in the exact 18-column MDM report",
+    "Contract-verified export includes only eligible successful invoices"
+  ],
+  "seconds": 73.5,
+  "note": "Supplied synthetic/training-corpus regression, not independent company-invoice accuracy. Blank reference labels are unknown and not scored. Repeated archive copies are included in entry counts; unique-input counts are separate. No retraining or remote requests. Reports rebuilt from the identified prior extraction checkpoint; this is not a new model-inference run."
+}

@@ -1,0 +1,5 @@
+﻿status,count
+VALID,0
+REVIEW_REQUIRED,1
+FAILED,0
+SKIPPED,0

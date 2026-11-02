@@ -1,0 +1,5 @@
+﻿Insert or Update,Vendor,Billing Account,Invoice Number,Invoice Date,Currency,Start Date,End Date,Net Amount,Tax Amount,Description,Date Entered,Approved On Date
+Insert,Atlas Professional Services,CON-2026-0011,DEMO-20261009-0011,10/09/2026,USD,10/01/2026,10/31/2026,2785.0,0.0,Managed analytics; Data delivery service,10/14/2026,10/14/2026
+Insert,Acme Solutions Ltd,CON-2026-0002,DEMO-20261009-0002,10/09/2026,EUR,10/01/2026,10/31/2026,1980.0,0.0,Platform subscription; Technical support service,10/14/2026,10/14/2026
+Insert,Vertex Technology Group,CON-2026-0006,DEMO-20261009-0006,10/09/2026,USD,10/01/2026,10/31/2026,2325.0,0.0,Platform subscription; Technical support service,10/14/2026,10/14/2026
+Insert,Evergreen Software Ltd,CON-2026-0010,DEMO-20261009-0010,10/09/2026,HKD,10/01/2026,10/31/2026,2670.0,0.0,Platform subscription; Technical support service,10/14/2026,10/14/2026

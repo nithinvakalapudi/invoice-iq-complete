@@ -1,0 +1,10 @@
+{
+  "run_id": "3d27c90a2034b6d2",
+  "model": "gemini-3.7-flash",
+  "dataset": "Voxel51/high-quality-invoice-images-for-ocr",
+  "dataset_revision": "d21f03cfeea2b330e15a229883c66d7ebece8e69",
+  "selected_invoices": 1000,
+  "development_target": 100,
+  "test_target": 900,
+  "minimum_field_confidence": 95.0
+}

@@ -1,0 +1,8 @@
+﻿archive,outcome,documents,reason
+invoices_10_unique.zip,EXPANDED,10,
+invoices_training_corrected.zip,EXPANDED,16,
+invoice_training_50.zip,EXPANDED,70,
+invoice_training_50 (1).zip,EXPANDED,70,
+invoice_2000_training_dataset.zip,UI_LIMIT_BLOCKED_AS_EXPECTED,2000,ZIP contains more than 200 supported documents: invoice_2000_training_dataset.zip
+two_outlook_invoice_emails.zip,EXPANDED,8,
+outlook_invoice_mails_like_reference.zip,EXPANDED,2,

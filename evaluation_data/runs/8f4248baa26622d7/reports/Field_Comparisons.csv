@@ -1,0 +1,31 @@
+﻿source_file,split,field,expected,actual,correct,index
+batch1-0018.jpg,development,invoice_number,36187296,36187296,True,
+batch1-0018.jpg,development,invoice_date,01/05/2017,2017-01-05,True,
+batch1-0018.jpg,development,vendor_name,"Lopez, Murray and Johnston","Lopez, Murray and Johnston",True,
+batch1-0018.jpg,development,vendor_address,"62820 White Glen
+Emilyshire, IN 44602","62820 White Glen Emilyshire, IN 44602",True,
+batch1-0018.jpg,development,customer_name,White Ltd,White Ltd,True,
+batch1-0018.jpg,development,customer_address,"58435 Kline Wall
+Port Stacey, NM 41817","58435 Kline Wall Port Stacey, NM 41817",True,
+batch1-0018.jpg,development,bank_account_number,GB48OUAZ93098629612648,GB48OUAZ93098629612648,True,
+batch1-0018.jpg,development,total_amount,518.80,518.8,True,
+batch1-0018.jpg,development,tax_amount,47.16,47.16,True,
+batch1-0018.jpg,development,line_count,6,6,True,
+batch1-0018.jpg,development,line_description,Nike Kids KD Trey 5 / Nike Black Size 4.5aY,Nike Kids KD Trey 5 / Nike Black Size 4.5aY,True,0
+batch1-0018.jpg,development,line_quantity,5.00,5.0,True,0
+batch1-0018.jpg,development,line_line_total,121.00,121.0,True,0
+batch1-0018.jpg,development,line_description,Lego Star Wars Minifigures Stormtrooper Darth Vader Yoda Obi Van Mandalorian New,Lego Star Wars Minifigures Stormtrooper Darth Vader Yoda Obi Van Mandalorian New,True,1
+batch1-0018.jpg,development,line_quantity,1.00,1.0,True,1
+batch1-0018.jpg,development,line_line_total,3.28,3.28,True,1
+batch1-0018.jpg,development,line_description,Nike Air Jordan 1 Mid Obsidian 640735-174 Toddler Kids Children Size 8C Blue,Nike Air Jordan 1 Mid Obsidian 640735-174 Toddler Kids Children Size 8C Blue,True,2
+batch1-0018.jpg,development,line_quantity,5.00,5.0,True,2
+batch1-0018.jpg,development,line_line_total,137.44,137.44,True,2
+batch1-0018.jpg,development,line_description,Oomphies Boys Ankle Boots Shoes Gray Green Kids Size 2 EUC,Oomphies Boys Ankle Boots Shoes Gray Green Kids Size 2 EUC,True,3
+batch1-0018.jpg,development,line_quantity,4.00,4.0,True,3
+batch1-0018.jpg,development,line_line_total,52.76,52.76,True,3
+batch1-0018.jpg,development,line_description,Jordan 10 Retro Fusion Red Size 6Y,Jordan 10 Retro Fusion Red Size 6Y,True,4
+batch1-0018.jpg,development,line_quantity,3.00,3.0,True,4
+batch1-0018.jpg,development,line_line_total,198.00,198.0,True,4
+batch1-0018.jpg,development,line_description,Jordan Hydro 2 (TD)-Child Size 10c,Jordan Hydro 2 (TD)-Child Size 10c,True,5
+batch1-0018.jpg,development,line_quantity,1.00,1.0,True,5
+batch1-0018.jpg,development,line_line_total,6.33,6.33,True,5

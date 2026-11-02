@@ -1,0 +1,759 @@
+{
+  "dataset": "osamahosamabdellatif/high-quality-invoice-images-for-ocr",
+  "label_sha256": "2480ee3ffc40578f954d02649147fd09be97795ed3290f8e56a7f8807a886477",
+  "total_images": 60,
+  "training_images": 48,
+  "holdout_images": 12,
+  "scope": "One batch, limited sample; not a business-invoice accuracy claim",
+  "unsupported_labels": [
+    "service_start_date",
+    "service_end_date",
+    "region",
+    "billing_account",
+    "contract"
+  ],
+  "baseline": {
+    "fields": {
+      "vendor_name": {
+        "correct": 12,
+        "tested": 12
+      },
+      "customer_name": {
+        "correct": 12,
+        "tested": 12
+      },
+      "invoice_number": {
+        "correct": 12,
+        "tested": 12
+      },
+      "invoice_date": {
+        "correct": 7,
+        "tested": 12
+      },
+      "total_amount": {
+        "correct": 12,
+        "tested": 12
+      },
+      "tax_amount": {
+        "correct": 12,
+        "tested": 12
+      }
+    },
+    "records": [
+      {
+        "file": "batch1-0117.jpg",
+        "expected": {
+          "vendor_name": "James LLC",
+          "customer_name": "Barnes LLC",
+          "invoice_number": "93053660",
+          "invoice_date": "10/09/2014",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "34.09",
+          "total_amount": "375.04"
+        },
+        "actual": {
+          "invoice_number": "93053660",
+          "vendor_name": "James LLC",
+          "customer_name": "Barnes LLC",
+          "vendor_address": "56830 Kenneth Rapid Apt. 078\nSouth Christinahaven, AZ 01755",
+          "customer_address": "USS Clark\nFPO AA 80689",
+          "subtotal": "340.95",
+          "tax_amount": "34.09",
+          "total_amount": "375.04",
+          "region": "South Christinahaven, AZ"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0214.jpg",
+        "expected": {
+          "vendor_name": "Smith, Jennings and Daugherty",
+          "customer_name": "Gallagher LLC",
+          "invoice_number": "43437889",
+          "invoice_date": "12/06/2019",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "488.30",
+          "total_amount": "5 371.27"
+        },
+        "actual": {
+          "invoice_number": "43437889",
+          "vendor_name": "Smith, Jennings and Daugherty",
+          "customer_name": "Gallagher LLC",
+          "vendor_address": "03697 Mcclain Hills\nWest Carrieland, VT 89899",
+          "customer_address": "9901 Holly Circle Suite 899\nEast Sherry, ND 50444",
+          "subtotal": "4882.97",
+          "tax_amount": "488.30",
+          "total_amount": "5371.27",
+          "region": "West Carrieland, VT"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0363.jpg",
+        "expected": {
+          "vendor_name": "Nichols-Powell",
+          "customer_name": "Ballard-Henry",
+          "invoice_number": "16499996",
+          "invoice_date": "05/05/2019",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "1.95",
+          "total_amount": "21.45"
+        },
+        "actual": {
+          "invoice_number": "16499996",
+          "invoice_date": "2019-05-05",
+          "vendor_name": "Nichols-Powell",
+          "customer_name": "Ballard-Henry",
+          "vendor_address": "19796 Lauren Courts\nWatkinsview, VA 84637",
+          "customer_address": "USNS Brown\nFPO AE 78346",
+          "subtotal": "19.50",
+          "tax_amount": "1.95",
+          "total_amount": "21.45",
+          "region": "Watkinsview, VA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0143.jpg",
+        "expected": {
+          "vendor_name": "Ellis-Thomas",
+          "customer_name": "Garcia Ltd",
+          "invoice_number": "61809225",
+          "invoice_date": "10/24/2015",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "1612.75",
+          "total_amount": "17740.25"
+        },
+        "actual": {
+          "invoice_number": "61809225",
+          "invoice_date": "2015-10-24",
+          "vendor_name": "Ellis-Thomas",
+          "customer_name": "Garcia Ltd",
+          "vendor_address": "0992 Melinda Summit Suite 839\nWest Bryanstad, VA 84954",
+          "customer_address": "576 Duncan Prairie\nMoodyland, KS 74247",
+          "subtotal": "16127.50",
+          "tax_amount": "1612.75",
+          "total_amount": "17740.25",
+          "region": "West Bryanstad, VA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0368.jpg",
+        "expected": {
+          "vendor_name": "Horne-Fields",
+          "customer_name": "French-Sullivan",
+          "invoice_number": "87934175",
+          "invoice_date": "10/19/2016",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "9.80",
+          "total_amount": "107.78"
+        },
+        "actual": {
+          "invoice_number": "87934175",
+          "invoice_date": "2016-10-19",
+          "vendor_name": "Horne-Fields",
+          "customer_name": "French-Sullivan",
+          "vendor_address": "13432 Kim Cliffs\nPort Wandaland, IA 40996",
+          "customer_address": "609 Morgan Locks\nNew Jamiemouth, FL 32767",
+          "subtotal": "97.98",
+          "tax_amount": "9.80",
+          "total_amount": "107.78",
+          "region": "Port Wandaland, IA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0436.jpg",
+        "expected": {
+          "vendor_name": "Padilla, Webb and Pearson",
+          "customer_name": "Marsh-Kennedy",
+          "invoice_number": "56427222",
+          "invoice_date": "11/26/2018",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "27.99",
+          "total_amount": "307.93"
+        },
+        "actual": {
+          "invoice_number": "56427222",
+          "invoice_date": "2018-11-26",
+          "vendor_name": "Padilla, Webb and Pearson",
+          "customer_name": "Marsh-Kennedy",
+          "vendor_address": "96997 Ellis River\nNew Kimberlyhaven, AZ 52628",
+          "customer_address": "90918 Jesus Village Suite 061\nSaundersstad, AK 57749",
+          "subtotal": "279.94",
+          "tax_amount": "27.99",
+          "total_amount": "307.93",
+          "region": "New Kimberlyhaven, AZ"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0182.jpg",
+        "expected": {
+          "vendor_name": "Campbell, Chavez and Reynolds",
+          "customer_name": "Rodriguez-Morgan",
+          "invoice_number": "89790497",
+          "invoice_date": "10/02/2020",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "11.57",
+          "total_amount": "127.31"
+        },
+        "actual": {
+          "invoice_number": "89790497",
+          "vendor_name": "Campbell, Chavez and Reynolds",
+          "customer_name": "Rodriguez-Morgan",
+          "vendor_address": "462 Lewis Manor Apt. 741\nRichardfurt, IL 50521",
+          "customer_address": "9228 Randall Harbors\nRuizstad, KY 33798",
+          "subtotal": "115.74",
+          "tax_amount": "11.57",
+          "total_amount": "127.31",
+          "region": "Richardfurt, IL"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0387.jpg",
+        "expected": {
+          "vendor_name": "Atkinson-Woods",
+          "customer_name": "Turner Ltd",
+          "invoice_number": "11640046",
+          "invoice_date": "11/06/2014",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "771.62",
+          "total_amount": "8487.82"
+        },
+        "actual": {
+          "invoice_number": "11640046",
+          "vendor_name": "Atkinson-Woods",
+          "customer_name": "Turner Ltd",
+          "vendor_address": "730 Matthew Union\nBlankenshipside, DE 36985",
+          "customer_address": "197 Donald Flat\nBaileychester, MA 48782",
+          "subtotal": "7716.20",
+          "tax_amount": "771.62",
+          "total_amount": "8487.82",
+          "region": "Blankenshipside, DE"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0322.jpg",
+        "expected": {
+          "vendor_name": "Hobbs, Chavez and Norman",
+          "customer_name": "Martinez-Casey",
+          "invoice_number": "38086377",
+          "invoice_date": "04/22/2018",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "37.79",
+          "total_amount": "415.69"
+        },
+        "actual": {
+          "invoice_number": "38086377",
+          "invoice_date": "2018-04-22",
+          "vendor_name": "Hobbs, Chavez and Norman",
+          "customer_name": "Martinez-Casey",
+          "vendor_address": "55136 Jackson Meadows\nPort David, AZ 07240",
+          "customer_address": "85820 Eric Forks Apt. 733\nGuerraberg, CA 36346",
+          "subtotal": "377.90",
+          "tax_amount": "37.79",
+          "total_amount": "415.69",
+          "region": "Port David, AZ"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0057.jpg",
+        "expected": {
+          "vendor_name": "Jones, Davis and Moses",
+          "customer_name": "Cox LLC",
+          "invoice_number": "89299747",
+          "invoice_date": "04/14/2018",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "35.36",
+          "total_amount": "389.00"
+        },
+        "actual": {
+          "invoice_number": "89299747",
+          "invoice_date": "2018-04-14",
+          "vendor_name": "Jones, Davis and Moses",
+          "customer_name": "Cox LLC",
+          "vendor_address": "6622 Davis Court\nCurtismouth, MA 23635",
+          "customer_address": "164 Dean Bypass\nLake Stephenchester, AR 78025",
+          "subtotal": "353.64",
+          "tax_amount": "35.36",
+          "total_amount": "389.00",
+          "region": "Curtismouth, MA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0293.jpg",
+        "expected": {
+          "vendor_name": "Gutierrez LLC",
+          "customer_name": "Miller, Myers and Bean",
+          "invoice_number": "36433509",
+          "invoice_date": "03/29/2021",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "1.16",
+          "total_amount": "12.76"
+        },
+        "actual": {
+          "invoice_number": "36433509",
+          "invoice_date": "2021-03-29",
+          "vendor_name": "Gutierrez LLC",
+          "customer_name": "Miller, Myers and Bean",
+          "vendor_address": "8987 Fitzpatrick Parks Apt. 322\nNew Misty, NM 20546",
+          "customer_address": "45922 Patricia Courts\nSouth William, IN 08798",
+          "subtotal": "11.60",
+          "tax_amount": "1.16",
+          "total_amount": "12.76",
+          "region": "New Misty, NM"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0081.jpg",
+        "expected": {
+          "vendor_name": "Fernandez Ltd",
+          "customer_name": "Wilson-Wilson",
+          "invoice_number": "15288019",
+          "invoice_date": "09/07/2014",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "0.16",
+          "total_amount": "1.71"
+        },
+        "actual": {
+          "invoice_number": "15288019",
+          "vendor_name": "Fernandez Ltd",
+          "customer_name": "Wilson-Wilson",
+          "vendor_address": "06398 Jensen Loaf\nAndrewton, AR 65741",
+          "customer_address": "85455 Carter Estate\nMooremouth, CT 29699",
+          "subtotal": "1.55",
+          "tax_amount": "0.16",
+          "total_amount": "1.71",
+          "region": "Andrewton, AR"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "fields": {
+      "vendor_name": {
+        "correct": 12,
+        "tested": 12
+      },
+      "customer_name": {
+        "correct": 12,
+        "tested": 12
+      },
+      "invoice_number": {
+        "correct": 12,
+        "tested": 12
+      },
+      "invoice_date": {
+        "correct": 7,
+        "tested": 12
+      },
+      "total_amount": {
+        "correct": 12,
+        "tested": 12
+      },
+      "tax_amount": {
+        "correct": 12,
+        "tested": 12
+      }
+    },
+    "records": [
+      {
+        "file": "batch1-0117.jpg",
+        "expected": {
+          "vendor_name": "James LLC",
+          "customer_name": "Barnes LLC",
+          "invoice_number": "93053660",
+          "invoice_date": "10/09/2014",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "34.09",
+          "total_amount": "375.04"
+        },
+        "actual": {
+          "invoice_number": "93053660",
+          "vendor_name": "James LLC",
+          "customer_name": "Barnes LLC",
+          "vendor_address": "56830 Kenneth Rapid Apt. 078\nSouth Christinahaven, AZ 01755",
+          "customer_address": "USS Clark\nFPO AA 80689",
+          "subtotal": "340.95",
+          "tax_amount": "34.09",
+          "total_amount": "375.04",
+          "region": "South Christinahaven, AZ"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0214.jpg",
+        "expected": {
+          "vendor_name": "Smith, Jennings and Daugherty",
+          "customer_name": "Gallagher LLC",
+          "invoice_number": "43437889",
+          "invoice_date": "12/06/2019",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "488.30",
+          "total_amount": "5 371.27"
+        },
+        "actual": {
+          "invoice_number": "43437889",
+          "vendor_name": "Smith, Jennings and Daugherty",
+          "customer_name": "Gallagher LLC",
+          "vendor_address": "03697 Mcclain Hills\nWest Carrieland, VT 89899",
+          "customer_address": "9901 Holly Circle Suite 899\nEast Sherry, ND 50444",
+          "subtotal": "4882.97",
+          "tax_amount": "488.30",
+          "total_amount": "5371.27",
+          "region": "West Carrieland, VT"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0363.jpg",
+        "expected": {
+          "vendor_name": "Nichols-Powell",
+          "customer_name": "Ballard-Henry",
+          "invoice_number": "16499996",
+          "invoice_date": "05/05/2019",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "1.95",
+          "total_amount": "21.45"
+        },
+        "actual": {
+          "invoice_number": "16499996",
+          "invoice_date": "2019-05-05",
+          "vendor_name": "Nichols-Powell",
+          "customer_name": "Ballard-Henry",
+          "vendor_address": "19796 Lauren Courts\nWatkinsview, VA 84637",
+          "customer_address": "USNS Brown\nFPO AE 78346",
+          "subtotal": "19.50",
+          "tax_amount": "1.95",
+          "total_amount": "21.45",
+          "region": "Watkinsview, VA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0143.jpg",
+        "expected": {
+          "vendor_name": "Ellis-Thomas",
+          "customer_name": "Garcia Ltd",
+          "invoice_number": "61809225",
+          "invoice_date": "10/24/2015",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "1612.75",
+          "total_amount": "17740.25"
+        },
+        "actual": {
+          "invoice_number": "61809225",
+          "invoice_date": "2015-10-24",
+          "vendor_name": "Ellis-Thomas",
+          "customer_name": "Garcia Ltd",
+          "vendor_address": "0992 Melinda Summit Suite 839\nWest Bryanstad, VA 84954",
+          "customer_address": "576 Duncan Prairie\nMoodyland, KS 74247",
+          "subtotal": "16127.50",
+          "tax_amount": "1612.75",
+          "total_amount": "17740.25",
+          "region": "West Bryanstad, VA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0368.jpg",
+        "expected": {
+          "vendor_name": "Horne-Fields",
+          "customer_name": "French-Sullivan",
+          "invoice_number": "87934175",
+          "invoice_date": "10/19/2016",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "9.80",
+          "total_amount": "107.78"
+        },
+        "actual": {
+          "invoice_number": "87934175",
+          "invoice_date": "2016-10-19",
+          "vendor_name": "Horne-Fields",
+          "customer_name": "French-Sullivan",
+          "vendor_address": "13432 Kim Cliffs\nPort Wandaland, IA 40996",
+          "customer_address": "609 Morgan Locks\nNew Jamiemouth, FL 32767",
+          "subtotal": "97.98",
+          "tax_amount": "9.80",
+          "total_amount": "107.78",
+          "region": "Port Wandaland, IA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0436.jpg",
+        "expected": {
+          "vendor_name": "Padilla, Webb and Pearson",
+          "customer_name": "Marsh-Kennedy",
+          "invoice_number": "56427222",
+          "invoice_date": "11/26/2018",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "27.99",
+          "total_amount": "307.93"
+        },
+        "actual": {
+          "invoice_number": "56427222",
+          "invoice_date": "2018-11-26",
+          "vendor_name": "Padilla, Webb and Pearson",
+          "customer_name": "Marsh-Kennedy",
+          "vendor_address": "96997 Ellis River\nNew Kimberlyhaven, AZ 52628",
+          "customer_address": "90918 Jesus Village Suite 061\nSaundersstad, AK 57749",
+          "subtotal": "279.94",
+          "tax_amount": "27.99",
+          "total_amount": "307.93",
+          "region": "New Kimberlyhaven, AZ"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0182.jpg",
+        "expected": {
+          "vendor_name": "Campbell, Chavez and Reynolds",
+          "customer_name": "Rodriguez-Morgan",
+          "invoice_number": "89790497",
+          "invoice_date": "10/02/2020",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "11.57",
+          "total_amount": "127.31"
+        },
+        "actual": {
+          "invoice_number": "89790497",
+          "vendor_name": "Campbell, Chavez and Reynolds",
+          "customer_name": "Rodriguez-Morgan",
+          "vendor_address": "462 Lewis Manor Apt. 741\nRichardfurt, IL 50521",
+          "customer_address": "9228 Randall Harbors\nRuizstad, KY 33798",
+          "subtotal": "115.74",
+          "tax_amount": "11.57",
+          "total_amount": "127.31",
+          "region": "Richardfurt, IL"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0387.jpg",
+        "expected": {
+          "vendor_name": "Atkinson-Woods",
+          "customer_name": "Turner Ltd",
+          "invoice_number": "11640046",
+          "invoice_date": "11/06/2014",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "771.62",
+          "total_amount": "8487.82"
+        },
+        "actual": {
+          "invoice_number": "11640046",
+          "vendor_name": "Atkinson-Woods",
+          "customer_name": "Turner Ltd",
+          "vendor_address": "730 Matthew Union\nBlankenshipside, DE 36985",
+          "customer_address": "197 Donald Flat\nBaileychester, MA 48782",
+          "subtotal": "7716.20",
+          "tax_amount": "771.62",
+          "total_amount": "8487.82",
+          "region": "Blankenshipside, DE"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      },
+      {
+        "file": "batch1-0322.jpg",
+        "expected": {
+          "vendor_name": "Hobbs, Chavez and Norman",
+          "customer_name": "Martinez-Casey",
+          "invoice_number": "38086377",
+          "invoice_date": "04/22/2018",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "37.79",
+          "total_amount": "415.69"
+        },
+        "actual": {
+          "invoice_number": "38086377",
+          "invoice_date": "2018-04-22",
+          "vendor_name": "Hobbs, Chavez and Norman",
+          "customer_name": "Martinez-Casey",
+          "vendor_address": "55136 Jackson Meadows\nPort David, AZ 07240",
+          "customer_address": "85820 Eric Forks Apt. 733\nGuerraberg, CA 36346",
+          "subtotal": "377.90",
+          "tax_amount": "37.79",
+          "total_amount": "415.69",
+          "region": "Port David, AZ"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0057.jpg",
+        "expected": {
+          "vendor_name": "Jones, Davis and Moses",
+          "customer_name": "Cox LLC",
+          "invoice_number": "89299747",
+          "invoice_date": "04/14/2018",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "35.36",
+          "total_amount": "389.00"
+        },
+        "actual": {
+          "invoice_number": "89299747",
+          "invoice_date": "2018-04-14",
+          "vendor_name": "Jones, Davis and Moses",
+          "customer_name": "Cox LLC",
+          "vendor_address": "6622 Davis Court\nCurtismouth, MA 23635",
+          "customer_address": "164 Dean Bypass\nLake Stephenchester, AR 78025",
+          "subtotal": "353.64",
+          "tax_amount": "35.36",
+          "total_amount": "389.00",
+          "region": "Curtismouth, MA"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0293.jpg",
+        "expected": {
+          "vendor_name": "Gutierrez LLC",
+          "customer_name": "Miller, Myers and Bean",
+          "invoice_number": "36433509",
+          "invoice_date": "03/29/2021",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "1.16",
+          "total_amount": "12.76"
+        },
+        "actual": {
+          "invoice_number": "36433509",
+          "invoice_date": "2021-03-29",
+          "vendor_name": "Gutierrez LLC",
+          "customer_name": "Miller, Myers and Bean",
+          "vendor_address": "8987 Fitzpatrick Parks Apt. 322\nNew Misty, NM 20546",
+          "customer_address": "45922 Patricia Courts\nSouth William, IN 08798",
+          "subtotal": "11.60",
+          "tax_amount": "1.16",
+          "total_amount": "12.76",
+          "region": "New Misty, NM"
+        },
+        "issues": []
+      },
+      {
+        "file": "batch1-0081.jpg",
+        "expected": {
+          "vendor_name": "Fernandez Ltd",
+          "customer_name": "Wilson-Wilson",
+          "invoice_number": "15288019",
+          "invoice_date": "09/07/2014",
+          "currency": "",
+          "contact_email": "",
+          "account_number": "",
+          "subtotal": "",
+          "tax_amount": "0.16",
+          "total_amount": "1.71"
+        },
+        "actual": {
+          "invoice_number": "15288019",
+          "vendor_name": "Fernandez Ltd",
+          "customer_name": "Wilson-Wilson",
+          "vendor_address": "06398 Jensen Loaf\nAndrewton, AR 65741",
+          "customer_address": "85455 Carter Estate\nMooremouth, CT 29699",
+          "subtotal": "1.55",
+          "tax_amount": "0.16",
+          "total_amount": "1.71",
+          "region": "Andrewton, AR"
+        },
+        "issues": [
+          "invoice_date: ambiguous date order; confirm DMY or MDY"
+        ]
+      }
+    ]
+  },
+  "candidate_model": "evaluation_data\\kaggle_sample\\candidate_model.joblib",
+  "deployment": "Candidate only; existing production model was not overwritten"
+}

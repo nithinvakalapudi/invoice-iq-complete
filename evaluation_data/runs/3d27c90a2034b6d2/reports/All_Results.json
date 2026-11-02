@@ -1,0 +1,260 @@
+{
+  "metadata": {
+    "run_id": "3d27c90a2034b6d2",
+    "model": "gemini-3.7-flash",
+    "dataset": "Voxel51/high-quality-invoice-images-for-ocr",
+    "dataset_revision": "d21f03cfeea2b330e15a229883c66d7ebece8e69",
+    "selected_invoices": 1000,
+    "development_target": 100,
+    "test_target": 900,
+    "minimum_field_confidence": 95.0
+  },
+  "status_counts": {
+    "VALID": 0,
+    "REVIEW_REQUIRED": 0,
+    "FAILED": 1,
+    "SKIPPED": 0
+  },
+  "records": [
+    {
+      "id": "batch1-0018.jpg",
+      "split": "development",
+      "image_sha256": "0253de3c4bb72b0c2274e480374b67629a9e7d7919b0288429d9d0b890d566c4",
+      "seconds": 54.932,
+      "result": {
+        "invoice": {
+          "invoice_number": null,
+          "invoice_date": null,
+          "vendor_name": null,
+          "vendor_address": null,
+          "vendor_tax_id": null,
+          "customer_name": null,
+          "customer_address": null,
+          "customer_tax_id": null,
+          "po_number": null,
+          "billing_period": null,
+          "currency": null,
+          "subtotal": null,
+          "discount": null,
+          "tax_amount": null,
+          "shipping_amount": null,
+          "total_amount": null,
+          "due_date": null,
+          "payment_terms": null,
+          "bank_details": null,
+          "service_start_date": null,
+          "service_end_date": null,
+          "customer_email": null,
+          "bank_account_number": null,
+          "scope": null,
+          "invoice_comments": null,
+          "region": null
+        },
+        "line_items": [],
+        "field_confidence": {},
+        "source_file": "batch1-0018.jpg",
+        "processed_at": "2026-10-05T02:53:11.981261+00:00",
+        "processing_status": "FAILED",
+        "validation_status": "FAILED",
+        "review_required": true,
+        "duplicate_status": "NOT_DUPLICATE",
+        "errors": [
+          "Gemini API request failed. Check network access, model availability, and API configuration."
+        ],
+        "warnings": [],
+        "extraction_confidence": 0.0,
+        "source_email": "",
+        "source_attachment": "",
+        "attachment_index": null
+      },
+      "scores": [
+        {
+          "field": "invoice_number",
+          "expected": "36187296",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "invoice_date",
+          "expected": "01/05/2017",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "vendor_name",
+          "expected": "Lopez, Murray and Johnston",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "vendor_address",
+          "expected": "62820 White Glen\nEmilyshire, IN 44602",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "customer_name",
+          "expected": "White Ltd",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "customer_address",
+          "expected": "58435 Kline Wall\nPort Stacey, NM 41817",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "bank_account_number",
+          "expected": "GB48OUAZ93098629612648",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "total_amount",
+          "expected": "518.80",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "tax_amount",
+          "expected": "47.16",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_count",
+          "expected": 6,
+          "actual": 0,
+          "correct": false
+        },
+        {
+          "field": "line_description",
+          "index": 0,
+          "expected": "Nike Kids KD Trey 5 / Nike Black Size 4.5aY",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_quantity",
+          "index": 0,
+          "expected": "5.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_line_total",
+          "index": 0,
+          "expected": "121.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_description",
+          "index": 1,
+          "expected": "Lego Star Wars Minifigures Stormtrooper Darth Vader Yoda Obi Van Mandalorian New",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_quantity",
+          "index": 1,
+          "expected": "1.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_line_total",
+          "index": 1,
+          "expected": "3.28",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_description",
+          "index": 2,
+          "expected": "Nike Air Jordan 1 Mid Obsidian 640735-174 Toddler Kids Children Size 8C Blue",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_quantity",
+          "index": 2,
+          "expected": "5.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_line_total",
+          "index": 2,
+          "expected": "137.44",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_description",
+          "index": 3,
+          "expected": "Oomphies Boys Ankle Boots Shoes Gray Green Kids Size 2 EUC",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_quantity",
+          "index": 3,
+          "expected": "4.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_line_total",
+          "index": 3,
+          "expected": "52.76",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_description",
+          "index": 4,
+          "expected": "Jordan 10 Retro Fusion Red Size 6Y",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_quantity",
+          "index": 4,
+          "expected": "3.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_line_total",
+          "index": 4,
+          "expected": "198.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_description",
+          "index": 5,
+          "expected": "Jordan Hydro 2 (TD)-Child Size 10c",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_quantity",
+          "index": 5,
+          "expected": "1.00",
+          "actual": null,
+          "correct": false
+        },
+        {
+          "field": "line_line_total",
+          "index": 5,
+          "expected": "6.33",
+          "actual": null,
+          "correct": false
+        }
+      ]
+    }
+  ]
+}

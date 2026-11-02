@@ -1,0 +1,91 @@
+{
+  "run_id": "3d27c90a2034b6d2",
+  "model": "gemini-3.7-flash",
+  "split": "development",
+  "utc": "2026-10-05T02:54:06.922072+00:00",
+  "target_for_split": 100,
+  "attempted": 1,
+  "successful_extractions": 0,
+  "stop_reason": null,
+  "fields": {
+    "invoice_number": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "invoice_date": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "vendor_name": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "vendor_address": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "customer_name": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "customer_address": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "bank_account_number": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "total_amount": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "tax_amount": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "line_count": {
+      "correct": 0,
+      "evaluated": 1,
+      "accuracy_percent": 0.0
+    },
+    "line_description": {
+      "correct": 0,
+      "evaluated": 6,
+      "accuracy_percent": 0.0
+    },
+    "line_quantity": {
+      "correct": 0,
+      "evaluated": 6,
+      "accuracy_percent": 0.0
+    },
+    "line_line_total": {
+      "correct": 0,
+      "evaluated": 6,
+      "accuracy_percent": 0.0
+    }
+  },
+  "status_counts": {
+    "VALID": 0,
+    "REVIEW_REQUIRED": 0,
+    "FAILED": 1,
+    "SKIPPED": 0
+  },
+  "complete": false,
+  "limitations": [
+    "Synthetic English invoices; mostly one layout family.",
+    "Blank/missing annotations are unscored, not assumed absent.",
+    "Publisher labels have not all been manually verified.",
+    "API failures count as extraction misses; confidence is not accuracy.",
+    "No model weight training; development split is for pipeline tuning only."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "model": "gemini-3.7-flash",
+  "http_status": 503,
+  "status": "UNAVAILABLE",
+  "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "note": "A separate diagnostic request after the failed pilot confirmed this provider error. It is not an additional evaluated invoice. Bulk evaluation was not started."
+}

@@ -1,0 +1,7 @@
+{
+  "started_at_utc": "2026-11-02T03:43:39.096791+00:00",
+  "folder": "Invoices",
+  "outcome": "failed",
+  "error": "RuntimeError: Classic Outlook is not running or its local profile is unavailable.",
+  "finished_at_utc": "2026-11-02T03:43:39.285135+00:00"
+}

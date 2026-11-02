@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+frontend/node_modules/
+training/node_modules/
+frontend/.vite/
+.codex-build/
+hosted_ui_token.txt
+**/hosted_ui_token.txt
+*.pem
+*.p12
+*.pfx

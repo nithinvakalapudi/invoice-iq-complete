@@ -1,0 +1,9 @@
+{
+  "invoice_input_folder": "",
+  "output_folder": "C:\\Users\\Nithin Chowdary\\Documents\\Codex\\2026-10-01\\billion\\invoice_ai\\config\\local_data",
+  "master_excel_filename": "Invoice_History.xlsx",
+  "mdm_folder": "C:\\Users\\Nithin Chowdary\\Documents\\Codex\\2026-10-01\\billion\\invoice_ai\\local_data\\MDM",
+  "review_threshold": 95.0,
+  "rounding_tolerance": 0.02,
+  "revision": "ac8d564bbdca428e8c14a363b3f9363b"
+}

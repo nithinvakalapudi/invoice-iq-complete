@@ -1,0 +1,65 @@
+[
+  {
+    "original_filename": "demo_invoice_CON-2026-0003.pdf",
+    "stored_filename": "0001_demo_invoice_CON-2026-0003.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0003 - Global Data Systems Inc [03e6921c568c]",
+    "source_attachment": "demo_invoice_CON-2026-0003.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0009.pdf",
+    "stored_filename": "0002_demo_invoice_CON-2026-0009.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0009 - Pinnacle Analytics [895ad5eec080]",
+    "source_attachment": "demo_invoice_CON-2026-0009.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0001.pdf",
+    "stored_filename": "0003_demo_invoice_CON-2026-0001.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0001 - Blue Ocean Technologies LLC [20380486011d]",
+    "source_attachment": "demo_invoice_CON-2026-0001.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0007.pdf",
+    "stored_filename": "0004_demo_invoice_CON-2026-0007.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0007 - Summit Business Solutions [d9df5af1b446]",
+    "source_attachment": "demo_invoice_CON-2026-0007.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0002.pdf",
+    "stored_filename": "0005_demo_invoice_CON-2026-0002.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0002 - Acme Solutions Ltd [182b145985bc]",
+    "source_attachment": "demo_invoice_CON-2026-0002.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0011.pdf",
+    "stored_filename": "0006_demo_invoice_CON-2026-0011.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0011 - Atlas Professional Services [2b2c07b7a29e]",
+    "source_attachment": "demo_invoice_CON-2026-0011.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0013.pdf",
+    "stored_filename": "0007_demo_invoice_CON-2026-0013.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0013 - Sterling Operations Ltd [8685d3575b56]",
+    "source_attachment": "demo_invoice_CON-2026-0013.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0006.pdf",
+    "stored_filename": "0008_demo_invoice_CON-2026-0006.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0006 - Vertex Technology Group [f8bb9a395fd8]",
+    "source_attachment": "demo_invoice_CON-2026-0006.pdf",
+    "attachment_index": 1
+  },
+  {
+    "original_filename": "demo_invoice_CON-2026-0010.pdf",
+    "stored_filename": "0009_demo_invoice_CON-2026-0010.pdf",
+    "source_email": "Outlook/SYNTHETIC TEST invoice DEMO-20261009-0010 - Evergreen Software Ltd [2b662d88e5a0]",
+    "source_attachment": "demo_invoice_CON-2026-0010.pdf",
+    "attachment_index": 1
+  }
+]
