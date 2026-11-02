@@ -8,7 +8,6 @@ from pathlib import Path
 from uuid import uuid4
 
 from services.local_storage import LocalStorage, _atomic_write
-from services.vendor_matching import catalog_paths, load_vendor_accounts
 
 
 @dataclass(frozen=True)
@@ -80,16 +79,8 @@ def validate_ui_settings(value: UiSettings) -> UiSettings:
         raise ValueError('Invoice input and MDM folders must be different; masters are not invoices.')
     if not 0 <= value.rounding_tolerance <= 100 or not 1 <= value.review_threshold <= 100:
         raise ValueError('Review threshold must be 1–100%; rounding tolerance must be 0–100.')
-    if mdm_folder:
-        vendor_path, contract_path = catalog_paths(Path(mdm_folder), allow_legacy=False)
-        if not vendor_path.is_file() or not contract_path.is_file():
-            raise ValueError('MDM folder must contain current InvoiceMDM_YYYYMMDD and contract_YYYYMMDD CSV/XLSX files (legacy vendor_accounts.csv and contracts.csv are supported only when no dated exports exist).')
-        if not load_vendor_accounts(vendor_path, contract_path):
-            raise ValueError('Vendor Accounts master has no usable accounts.')
-        # Require a correctly shaped contracts table, without rejecting individual
-        # undated/unmatched contracts: those remain visible validation outcomes.
-        from services.vendor_matching import read_master_rows
-        read_master_rows(contract_path, {'Contract ID', 'Start Date', 'End Date'})
+    # Save locations independently of whether today's MDM exports are present
+    # or parseable. Availability is checked when MDM matching runs.
     return replace(value, invoice_input_folder=input_folder, outlook_invoice_folder=outlook_folder,
                    output_folder=output_folder,
                    mdm_folder=mdm_folder, master_excel_filename=filename)

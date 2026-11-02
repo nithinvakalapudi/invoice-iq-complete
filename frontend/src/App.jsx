@@ -386,7 +386,6 @@ export default function App() {
       default_tolerance: data.ui_settings.rounding_tolerance,
       cumulative_invoice_report_file: `${data.ui_settings.output_folder}/MDM/Invoice_data.csv`,
     } : previous)
-    if (batch?.batch_id) await refreshCurrentBatch()
     return data.ui_settings
   }
   const runInputFolder = async () => {
