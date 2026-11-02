@@ -112,6 +112,14 @@ def vendor_similarity(invoice_vendor: str, account_vendor: str) -> float:
     meaningful_left = {word for word in left if word not in GENERIC_WORDS}
     meaningful_right = {word for word in right if word not in GENERIC_WORDS}
     shared = meaningful_left & meaningful_right
+    # Some masters retain the trailing organization qualifier "International"
+    # while the invoice prints a legal suffix such as Ltd. Treat this as strong
+    # evidence only when at least two leading business words match exactly.
+    shorter, longer = sorted((left, right), key=len)
+    shorter_meaningful = {word for word in shorter if word not in GENERIC_WORDS}
+    if (len(shorter_meaningful) >= 2 and len(longer) == len(shorter) + 1
+            and longer[:-1] == shorter and longer[-1] == 'international'):
+        return 96.0
     # A full business name with one OCR character error is stronger evidence
     # than an abbreviated name, but never outranks normalized exact matches.
     if (len(left) == len(right) and len(meaningful_left) >= 2
@@ -124,8 +132,6 @@ def vendor_similarity(invoice_vendor: str, account_vendor: str) -> float:
     # at least two non-generic words and the complete shorter name in order.
     # A single OCR character error in that prefix is allowed, not arbitrary
     # token substitutions, reordering, or matching on one common word.
-    shorter, longer = sorted((left, right), key=len)
-    shorter_meaningful = {word for word in shorter if word not in GENERIC_WORDS}
     prefix_score = 0.0
     if len(shorter) < len(longer) and len(shorter_meaningful) >= 2:
         prefix = longer[:len(shorter)]
