@@ -14,6 +14,7 @@ from services.vendor_matching import catalog_paths, load_vendor_accounts
 @dataclass(frozen=True)
 class UiSettings:
     invoice_input_folder: str = ''
+    outlook_invoice_folder: str = 'Invoices'
     output_folder: str = ''
     master_excel_filename: str = 'Invoice_History.xlsx'
     mdm_folder: str = ''
@@ -27,7 +28,8 @@ def settings_file(root: Path | str) -> Path:
 
 
 def load_ui_settings(base) -> UiSettings:
-    defaults = UiSettings(output_folder=str(Path(base.local_storage_dir).resolve()),
+    defaults = UiSettings(outlook_invoice_folder=base.outlook_invoice_folder,
+                          output_folder=str(Path(base.local_storage_dir).resolve()),
                           review_threshold=base.minimum_field_confidence,
                           rounding_tolerance=base.default_tolerance)
     path = settings_file(base.local_storage_dir)
@@ -58,6 +60,9 @@ def _folder(value: str, label: str, required: bool = False, existing: bool = Fal
 
 def validate_ui_settings(value: UiSettings) -> UiSettings:
     input_folder = _folder(value.invoice_input_folder, 'Invoice input folder', existing=True)
+    outlook_folder = value.outlook_invoice_folder.strip().strip('"')
+    if not outlook_folder or len(outlook_folder) > 255 or '/' in outlook_folder or '\\' in outlook_folder:
+        raise ValueError('Outlook invoice folder must be one folder name, such as Invoices.')
     output_folder = _folder(value.output_folder, 'Output folder', required=True)
     mdm_folder = _folder(value.mdm_folder, 'MDM folder', existing=True)
     filename = value.master_excel_filename.strip()
@@ -85,7 +90,8 @@ def validate_ui_settings(value: UiSettings) -> UiSettings:
         # undated/unmatched contracts: those remain visible validation outcomes.
         from services.vendor_matching import read_master_rows
         read_master_rows(contract_path, {'Contract ID', 'Start Date', 'End Date'})
-    return replace(value, invoice_input_folder=input_folder, output_folder=output_folder,
+    return replace(value, invoice_input_folder=input_folder, outlook_invoice_folder=outlook_folder,
+                   output_folder=output_folder,
                    mdm_folder=mdm_folder, master_excel_filename=filename)
 
 

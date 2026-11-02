@@ -381,6 +381,7 @@ export default function App() {
     setConfig((previous) => previous ? {
       ...previous,
       ui_settings: data.ui_settings,
+      outlook_invoice_folder: data.ui_settings.outlook_invoice_folder,
       minimum_field_confidence: data.ui_settings.review_threshold,
       default_tolerance: data.ui_settings.rounding_tolerance,
       cumulative_invoice_report_file: `${data.ui_settings.output_folder}/MDM/Invoice_data.csv`,

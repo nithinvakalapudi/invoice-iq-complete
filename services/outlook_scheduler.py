@@ -20,15 +20,15 @@ def _record_status(path: Path, payload: dict) -> None:
 
 def main() -> int:
     status_path = Path(settings.local_storage_dir) / 'outlook_schedule_status.json'
-    status = {'started_at_utc': datetime.now(timezone.utc).isoformat(),
-              'folder': settings.outlook_invoice_folder}
+    status = {'started_at_utc': datetime.now(timezone.utc).isoformat()}
     try:
         ui = load_ui_settings(settings)
+        status['folder'] = ui.outlook_invoice_folder
         storage = configured_storage(settings, ui)
         run = run_outlook_folder(
             storage, ui.rounding_tolerance, ui.review_threshold,
             settings.max_file_mb * 1_000_000, source='desktop',
-            mailbox=settings.outlook_mailbox, folder_name=settings.outlook_invoice_folder)
+            mailbox=settings.outlook_mailbox, folder_name=ui.outlook_invoice_folder)
         status.update(outcome='completed', mailbox=run.outlook_mailbox,
                       batch_id=run.batch_id,
                       emails_processed=run.desktop_emails_processed,

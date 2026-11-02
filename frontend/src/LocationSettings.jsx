@@ -11,7 +11,7 @@ export default function LocationSettings({ saved, threshold, tolerance, setThres
     window.addEventListener('hashchange', reveal)
     return () => window.removeEventListener('hashchange', reveal)
   }, [])
-  useEffect(() => { if (saved) setDraft(saved) }, [saved?.revision, saved?.output_folder, saved?.mdm_folder])
+  useEffect(() => { if (saved) setDraft(saved) }, [saved?.revision, saved?.invoice_input_folder, saved?.outlook_invoice_folder, saved?.output_folder, saved?.master_excel_filename, saved?.mdm_folder])
   const submit = async (event) => {
     event.preventDefault()
     const payload = settingsPayload(draft, threshold, tolerance)

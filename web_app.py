@@ -220,7 +220,7 @@ def config():
         "reviewed_training_examples": len(s.training_examples()) if available else 0,
         "warnings": warnings,
         "outlook_folder": outlook_folder,
-        "outlook_invoice_folder": settings.outlook_invoice_folder,
+        "outlook_invoice_folder": ui.outlook_invoice_folder,
         "outlook_mailbox": settings.outlook_mailbox,
         "vendor_accounts_file": vendor_file,
         "cumulative_invoice_report_file": str(s.output_folder / MDM_REPORT_NAME) if available else '',
@@ -230,6 +230,7 @@ def config():
 class SettingsUpdate(BaseModel):
     model_config = ConfigDict(extra='forbid')
     invoice_input_folder: str = ''
+    outlook_invoice_folder: str = 'Invoices'
     output_folder: str
     master_excel_filename: str
     mdm_folder: str = ''
@@ -372,11 +373,12 @@ class FolderRunSettings(BaseModel):
 def outlook_run(payload: FolderRunSettings, request: Request):
     _same_origin(request)
     s = storage()
+    ui = load_ui_settings(settings)
     try:
         run = run_outlook_folder(s, payload.tolerance, payload.threshold,
                                  settings.max_file_mb * 1_000_000,
                                  source=payload.source, mailbox=settings.outlook_mailbox,
-                                 folder_name=settings.outlook_invoice_folder)
+                                 folder_name=ui.outlook_invoice_folder)
     except (OSError, ValueError, RuntimeError) as exc:
         raise HTTPException(409, str(exc)) from exc
     vendor_accounts = s.vendor_accounts()
