@@ -138,12 +138,22 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
                 with tempfile.TemporaryDirectory(prefix='invoice-outlook-') as temp:
                     for attach_index in range(1, attachment_count + 1):
                         attachment = message.Attachments.Item(attach_index)
-                        if (_property(attachment, _HIDDEN_PROPERTY) or
-                            _property(attachment, _CID_PROPERTY) or
-                            _property(attachment, _LOCATION_PROPERTY)):
-                            continue
                         original = str(attachment.FileName or f'attachment-{attach_index}')
                         name = PurePosixPath(original.replace('\\', '/')).name
+                        # Outlook can expose Content-ID/Content-Location on a
+                        # real file attachment as well as on inline images.
+                        # Those properties alone must not hide a supported
+                        # document such as a PDF or workbook. Filter inline
+                        # images separately so signature logos are not treated
+                        # as invoice pages.
+                        hidden = _property(attachment, _HIDDEN_PROPERTY)
+                        is_inline_image = (
+                            Path(name).suffix.casefold() in {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp', '.gif'}
+                            and (_property(attachment, _CID_PROPERTY) or
+                                 _property(attachment, _LOCATION_PROPERTY))
+                        )
+                        if bool(hidden) or is_inline_image:
+                            continue
                         if not is_supported(name):
                             continue
                         if int(attachment.Size) > max_file_bytes:
