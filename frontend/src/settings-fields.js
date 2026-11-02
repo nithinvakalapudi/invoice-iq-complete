@@ -3,7 +3,7 @@ export const locationFields = [
   ['outlook_invoice_folder', 'Outlook invoice folder name', 'Invoices', 'Folder name inside the selected Outlook mailbox. Enter one folder name, not a filesystem path.'],
   ['output_folder', 'Output folder', 'C:\\InvoiceData\\Output', 'Cumulative CSV and Excel reports are saved here. Existing history is retained.'],
   ['master_excel_filename', 'Master Excel filename', 'Invoice_History.xlsx', 'Enter a filename ending in .xlsx, not a folder path.'],
-  ['mdm_folder', 'MDM folder — Vendor Accounts & Contracts', 'C:\\InvoiceData\\MDM', 'Add today’s VendorAcc and Contract CSV/XLSX exports; each filename must contain its keyword and today’s YYYYMMDD. Legacy InvoiceMDM filenames remain supported. Billing Account is read from Account Number.'],
+  ['mdm_folder', 'MDM folder — Vendor Accounts & Contracts', 'C:\\InvoiceData\\MDM', 'Add today’s VendorAcc and Contract CSV/XLSX exports; each filename must contain its keyword and today’s YYYYMMDD. Billing Account is read from Account Number.'],
 ]
 
 export function settingsPayload(draft, threshold, tolerance) {
