@@ -442,40 +442,71 @@ def _vendor_email(lines: list[str], vendor_name: str | None) -> str | None:
     return ranked[0][0]
 
 
-def _vendor_region(lines: list[str], vendor_name: str | None) -> str | None:
-    """Read region context from the supplier address, never customer addresses."""
-    bill_to = next((i for i, line in enumerate(lines)
-                    if re.search(r'\bbill\s+to\b', line, re.I)), min(len(lines), 18))
-    vendor_at = next((i for i, line in enumerate(lines[:bill_to])
-                      if vendor_name and vendor_name.casefold() in line.casefold()), None)
-    address = lines[vendor_at:bill_to] if vendor_at is not None else lines[:bill_to]
-    address = address[-12:]
+def _region_from_address(address_lines: list[str]) -> str | None:
+    """Convert printed supplier-address evidence into an MDM region value."""
+    if not address_lines:
+        return None
+
+    def city(text: str) -> str:
+        text = re.sub(r'^\d{4,6}\s+', '', text.strip(' ,'))
+        text = re.sub(r'\s+(?:\d{4,6}|[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})$', '', text)
+        return text.strip(' ,')
+
+    for line in reversed(address_lines):
+        match = re.search(r'(?P<city>[A-Za-z][A-Za-z .\'-]+),?\s+(?P<area>[A-Z]{2})\s+\d{4,6}(?:-\d{4})?\b', line)
+        if match and match.group('area') not in {'IN', 'TO', 'NO', 'PO'}:
+            return f"{match.group('city').strip(' ,')}, {match.group('area')}"
+
     countries = {
         'united kingdom': 'United Kingdom', 'uk': 'United Kingdom', 'england': 'United Kingdom',
         'scotland': 'United Kingdom', 'wales': 'United Kingdom', 'fr': 'France', 'france': 'France',
         'de': 'Germany', 'germany': 'Germany', 'us': 'United States', 'usa': 'United States',
         'united states': 'United States', 'ca': 'Canada', 'canada': 'Canada', 'sg': 'Singapore',
         'singapore': 'Singapore', 'hk': 'Hong Kong', 'hong kong': 'Hong Kong',
-        'in': 'India', 'india': 'India', 'uae': 'UAE',
+        'in': 'India', 'india': 'India', 'ae': 'UAE', 'uae': 'UAE',
+        'united arab emirates': 'UAE', 'au': 'Australia', 'australia': 'Australia',
+        'jp': 'Japan', 'japan': 'Japan',
     }
     postcode = re.compile(r'^(?:[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}|[A-Z]{2}\s+\d{4,6}|\d{4,6})$', re.I)
-    for index in range(len(address) - 1, -1, -1):
-        line = address[index].strip(' ,')
+    for index in range(len(address_lines) - 1, -1, -1):
+        line = address_lines[index].strip(' ,')
         parts = [part.strip() for part in line.split(',') if part.strip()]
-        country = countries.get((parts[-1] if parts else line).casefold())
+        country_token = (parts[-1] if parts else line).casefold()
+        country_token = re.sub(r'\s+\d{6}$', '', country_token)
+        country = countries.get(country_token)
         if not country:
             continue
         place_parts = parts[:-1] if len(parts) > 1 else []
         if not place_parts and index:
-            place_parts = [part.strip() for part in address[index - 1].split(',') if part.strip()]
+            place_parts = [part.strip() for part in address_lines[index - 1].split(',') if part.strip()]
         place_parts = [part for part in place_parts if not postcode.fullmatch(part)]
-        location = place_parts[-1] if place_parts else ''
-        location = re.sub(r'^\d{4,6}\s+', '', location.strip())
+        location = city(place_parts[-1]) if place_parts else ''
         if location and not re.search(r'\d|\b(?:street|road|floor|suite|limited|ltd)\b', location, re.I):
             if country in {'United Kingdom', 'France', 'Germany', 'United States', 'Canada'}:
                 return f'{location}, {country}'
         return country
+
+    for line in reversed(address_lines):
+        match = re.search(r'(?P<city>[A-Za-z][A-Za-z .\'-]+),?\s+[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b', line, re.I)
+        if match:
+            return f"{match.group('city').strip(' ,')}, United Kingdom"
     return None
+
+
+def _vendor_region(lines: list[str], vendor_name: str | None,
+                   vendor_address: str | None = None) -> str | None:
+    """Read region context from the supplier address, never customer addresses."""
+    spatial_lines = [line.strip() for line in (vendor_address or '').splitlines() if line.strip()]
+    spatial_region = _region_from_address(spatial_lines)
+    if spatial_region:
+        return spatial_region
+    bill_to = next((i for i, line in enumerate(lines)
+                    if re.search(r'\bbill\s+to\b', line, re.I)), min(len(lines), 18))
+    vendor_at = next((i for i, line in enumerate(lines[:bill_to])
+                      if vendor_name and vendor_name.casefold() in line.casefold()), None)
+    address = lines[vendor_at:bill_to] if vendor_at is not None else lines[:bill_to]
+    address = address[-12:]
+    return _region_from_address(address)
 
 
 def extract_invoice(document_data: bytes, filename: str) -> dict[str, Any]:
@@ -576,7 +607,7 @@ def extract_invoice(document_data: bytes, filename: str) -> dict[str, Any]:
         put("payment_terms", "Due Upon Receipt")
     if "market data" in text.casefold():
         put("scope", "Market Data")
-    put("region", _vendor_region(lines, invoice.get('vendor_name')))
+    put("region", _vendor_region(lines, invoice.get('vendor_name'), invoice.get('vendor_address')))
 
     # Normalize extracted dates together, using explicit document-wide evidence.
     # Avoid normalizing a raw ambiguous date earlier and losing its source order.
