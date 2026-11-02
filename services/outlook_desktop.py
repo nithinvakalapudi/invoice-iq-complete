@@ -15,7 +15,6 @@ from services.email_region import email_region
 from utils.file_utils import DocumentInput, is_supported
 
 _MAIL_CLASS = 43
-_HIDDEN_PROPERTY = 'http://schemas.microsoft.com/mapi/proptag/0x7FFE000B'
 _CID_PROPERTY = 'http://schemas.microsoft.com/mapi/proptag/0x3712001F'
 _LOCATION_PROPERTY = 'http://schemas.microsoft.com/mapi/proptag/0x3713001F'
 
@@ -133,6 +132,7 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
                     continue
                 attachments: list[tuple[str, bytes]] = []
                 documents: list[DocumentInput] = []
+                attachment_notes: list[str] = []
                 region, region_issue = email_region(str(message.Subject or ''),
                                                     str(message.Body or '')[:32000])
                 with tempfile.TemporaryDirectory(prefix='invoice-outlook-') as temp:
@@ -142,19 +142,20 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
                         name = PurePosixPath(original.replace('\\', '/')).name
                         # Outlook can expose Content-ID/Content-Location on a
                         # real file attachment as well as on inline images.
-                        # Those properties alone must not hide a supported
-                        # document such as a PDF or workbook. Filter inline
-                        # images separately so signature logos are not treated
-                        # as invoice pages.
-                        hidden = _property(attachment, _HIDDEN_PROPERTY)
+                        # Those properties and Outlook's hidden flag can be
+                        # incorrectly set by senders on visible invoice PDFs.
+                        # Trust the supported filename and validate actual bytes
+                        # downstream; only skip inline image resources.
                         is_inline_image = (
                             Path(name).suffix.casefold() in {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp', '.gif'}
                             and (_property(attachment, _CID_PROPERTY) or
                                  _property(attachment, _LOCATION_PROPERTY))
                         )
-                        if bool(hidden) or is_inline_image:
+                        if is_inline_image:
+                            attachment_notes.append(f'{name}: inline image resource')
                             continue
                         if not is_supported(name):
+                            attachment_notes.append(f'{name}: unsupported file extension')
                             continue
                         if int(attachment.Size) > max_file_bytes:
                             raise ValueError(f'{name} exceeds the document size limit.')
@@ -171,7 +172,8 @@ def read_invoice_emails(mailbox: str, folder_name: str, max_file_bytes: int,
                             email_region=region, email_region_issue=region_issue))
                 if not documents:
                     ignored += 1
-                    warnings.append(f'{label}: no supported invoice attachments found; supported types are PDF, common image files, CSV, XLSX, EML and MSG.')
+                    details = f" Details: {'; '.join(attachment_notes[:8])}." if attachment_notes else ''
+                    warnings.append(f'{label}: no supported invoice attachments found; supported types are PDF and common image files.{details}')
                     continue
                 digest = hashlib.sha256()
                 for document in documents:
