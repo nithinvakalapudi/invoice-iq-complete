@@ -203,16 +203,17 @@ class VendorResolution:
     reason: str = ''
 
 
-_VENDOR_EXPORT_DATE = re.compile(r'invoicemdm.*?(?P<date>\d{8})(?!\d)', re.IGNORECASE)
+_VENDOR_EXPORT_DATE = re.compile(
+    r'(?:invoicemdm|vendoracc(?:ounts?)?).*?(?P<date>\d{8})(?!\d)', re.IGNORECASE)
 _CONTRACT_EXPORT_DATE = re.compile(r'contracts?.*?(?P<date>\d{8})(?!\d)', re.IGNORECASE)
 
 
 def catalog_paths(folder: Path, today: date | None = None, *, allow_legacy: bool = True) -> tuple[Path, Path]:
     """Choose today's Vendor Accounts and Contracts exports.
 
-    Operational Vendor Accounts exports include ``InvoiceMDM`` followed later
-    by a YYYYMMDD stamp, for example
-    ``47711_InvoiceMDM_20261007T10_59_26_20261007_105946Z.csv``. The rest of
+    Operational Vendor Accounts exports include ``VendorAcc`` (or the legacy
+    ``InvoiceMDM`` keyword) followed later by a YYYYMMDD stamp, for example
+    ``47724_VendorAcc_20261007T10_59_26.csv``. The rest of
     the filename is not prescribed. Contracts use the equivalent
     ``anything_contract_anything_YYYYMMDD_anything.csv`` convention. Old exports are
     deliberately ignored. The legacy ``vendor_accounts.csv/.xlsx`` name
