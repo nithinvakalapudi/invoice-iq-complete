@@ -480,7 +480,9 @@ def _region_from_address(address_lines: list[str]) -> str | None:
         if not place_parts and index:
             place_parts = [part.strip() for part in address_lines[index - 1].split(',') if part.strip()]
         place_parts = [part for part in place_parts if not postcode.fullmatch(part)]
-        location = city(place_parts[-1]) if place_parts else ''
+        location = next((city(part) for part in reversed(place_parts)
+                         if city(part) and not re.search(
+                             r'\d|\b(?:street|road|floor|suite|limited|ltd)\b', city(part), re.I)), '')
         if location and not re.search(r'\d|\b(?:street|road|floor|suite|limited|ltd)\b', location, re.I):
             if country in {'United Kingdom', 'France', 'Germany', 'United States', 'Canada'}:
                 return f'{location}, {country}'
@@ -493,19 +495,27 @@ def _region_from_address(address_lines: list[str]) -> str | None:
     return None
 
 
-def _vendor_region(lines: list[str], vendor_name: str | None,
-                   vendor_address: str | None = None) -> str | None:
-    """Read region context from the supplier address, never customer addresses."""
-    spatial_lines = [line.strip() for line in (vendor_address or '').splitlines() if line.strip()]
+def _vendor_region(lines: list[str], customer_address: str | None = None) -> str | None:
+    """Extract the MDM region exclusively from the invoice Bill To address."""
+    spatial_lines = [line.strip() for line in (customer_address or '').splitlines() if line.strip()]
     spatial_region = _region_from_address(spatial_lines)
     if spatial_region:
         return spatial_region
     bill_to = next((i for i, line in enumerate(lines)
-                    if re.search(r'\bbill\s+to\b', line, re.I)), min(len(lines), 18))
-    vendor_at = next((i for i, line in enumerate(lines[:bill_to])
-                      if vendor_name and vendor_name.casefold() in line.casefold()), None)
-    address = lines[vendor_at:bill_to] if vendor_at is not None else lines[:bill_to]
-    address = address[-12:]
+                    if re.search(r'\bbill\s+to(?:\s+address)?\b', line, re.I)), None)
+    if bill_to is None:
+        return None
+    address = []
+    heading = re.search(r'\bbill\s+to(?:\s+address)?\b\s*:?', lines[bill_to], re.I)
+    inline = lines[bill_to][heading.end():].strip(' :-') if heading else ''
+    if inline:
+        address.append(inline)
+    for line in lines[bill_to + 1:bill_to + 16]:
+        if address and re.search(
+                r'\b(?:ship\s+to|invoice\s+(?:number|date)|description|quantity|product|service\s+period)\b',
+                line, re.I):
+            break
+        address.append(line)
     return _region_from_address(address)
 
 
@@ -607,7 +617,7 @@ def extract_invoice(document_data: bytes, filename: str) -> dict[str, Any]:
         put("payment_terms", "Due Upon Receipt")
     if "market data" in text.casefold():
         put("scope", "Market Data")
-    put("region", _vendor_region(lines, invoice.get('vendor_name'), invoice.get('vendor_address')))
+    put("region", _vendor_region(lines, invoice.get('customer_address')))
 
     # Normalize extracted dates together, using explicit document-wide evidence.
     # Avoid normalizing a raw ambiguous date earlier and losing its source order.
